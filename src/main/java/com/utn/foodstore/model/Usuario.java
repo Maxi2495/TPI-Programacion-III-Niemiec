@@ -33,7 +33,7 @@ public class Usuario extends Base {
     private String celular;
 
     @Column(name = "contrasena")
-    private String contraseña;
+    private String contrasena;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false, length = 20)

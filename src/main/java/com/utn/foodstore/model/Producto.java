@@ -1,13 +1,10 @@
 package com.utn.foodstore.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "productos")
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,6 +12,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @ToString(callSuper = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+@Entity
+@Table(name = "productos")
 public class Producto extends Base {
 
     @EqualsAndHashCode.Include
@@ -36,6 +35,10 @@ public class Producto extends Base {
     @Builder.Default
     @Column(name = "disponible")
     private Boolean disponible = Boolean.TRUE;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Muchos productos pueden tener una misma categoría
+    @JoinColumn(name = "categoria_id", nullable = false) //Columna de la FK
+    private Categoria categoria;
 
 
 }
