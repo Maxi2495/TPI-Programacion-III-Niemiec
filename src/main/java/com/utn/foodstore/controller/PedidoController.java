@@ -23,4 +23,9 @@ public class PedidoController {
         PedidoDto nuevoPedido = pedidoService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPedido);
     }
+
+    @GetMapping("/reports/revenue")
+    public ResponseEntity<Double> getTotalFacturado() {
+        return ResponseEntity.ok(pedidoService.calcularTotalFacturado());
+    }
 }

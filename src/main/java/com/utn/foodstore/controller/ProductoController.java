@@ -2,6 +2,7 @@ package com.utn.foodstore.controller;
 
 import com.utn.foodstore.dto.producto.ProductoCreate;
 import com.utn.foodstore.dto.producto.ProductoDto;
+import com.utn.foodstore.service.PedidoService;
 import com.utn.foodstore.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ public class ProductoController {
     public ResponseEntity<ProductoDto> crear(@Valid @RequestBody ProductoCreate dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.crear(dto));
     }
+
 
     @GetMapping
     public ResponseEntity<List<ProductoDto>> listar() {

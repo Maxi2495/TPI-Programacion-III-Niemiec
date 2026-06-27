@@ -96,4 +96,17 @@ public class PedidoService {
                 .estado(pedidoGuardado.getEstado().name())
                 .build();
     }
+
+    // HU-022: Total Facturado (para pedidos terminados)
+    public Double calcularTotalFacturado() {
+        //Busca pedidos activos
+        return pedidoRepository.findByEliminadoFalse().stream()
+                // Filto para los terminados
+                .filter(pedido -> pedido.getEstado() == EstadoPedido.TERMINADO)
+                //total de cada pedido
+                .mapToDouble(Pedido::getTotal)
+                // Suma final
+                .sum();
+    }
+
 }//Fin de clase
