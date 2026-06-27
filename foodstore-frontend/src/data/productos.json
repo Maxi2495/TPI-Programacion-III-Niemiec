@@ -1,0 +1,8 @@
+[
+  { "id": 1, "nombre": "Hamburguesa Clásica", "precio": 4500, "descripcion": "Carne 150g, lechuga, tomate, cebolla morada y mayonesa", "imagen": "https://foodish-api.com/images/burger/burger1.jpg" },
+  { "id": 2, "nombre": "Hamburguesa Doble", "precio": 6200, "descripcion": "Doble carne 150g c/u, cheddar, panceta y salsa barbacoa", "imagen": "https://foodish-api.com/images/burger/burger2.jpg" },
+  { "id": 3, "nombre": "Hamburguesa Completa", "precio": 5500, "descripcion": "Carne 150g, huevo, jamón, queso, lechuga y tomate", "imagen": "https://foodish-api.com/images/burger/burger3.jpg" },
+  { "id": 4, "nombre": "Hamburguesa Veggie", "precio": 5000, "descripcion": "Medallón de lentejas y quinoa, rúcula, tomato confitado y hummus", "imagen": "https://imgs.search.brave.com/vUU8kRyBw8UOoDFUuZja2znED53OJK7yhKK0fOgySrg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aG9sYS5jb20vaG9y/aXpvbi9sYW5kc2Nh/cGUvNWYyY2RlMjUz/ODExLWhhbWJ1cmd1/ZXNhcy12ZWdnaWVz/LXQuanBnP2ltPVJl/c2l6ZT0oNjQwKSx0/eXBlPWRvd25zaXpl" },
+  { "id": 5, "nombre": "Pizza Mozzarella", "precio": 3800, "descripcion": "Mozzarella, salsa de tomate y orégano", "imagen": "https://foodish-api.com/images/pizza/pizza1.jpg" },
+  { "id": 8, "nombre": "Pizza Especial", "precio": 5200, "descripcion": "Mozzarella, pepperoni, morrón, cebolla, huevo y aceitunas", "imagen": "https://foodish-api.com/images/pizza/pizza4.jpg" }
+]
