@@ -16,6 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @SuperBuilder
 @ToString(callSuper = true, exclude = {"detalles"})
 @EqualsAndHashCode(callSuper = true)
@@ -42,6 +43,9 @@ public class Pedido extends Base implements Calculable {
     @JoinColumn(name = "pedido_id")
     @Builder.Default
     private Set<DetallePedido> detalles = new HashSet<>();
+
+    @ManyToOne
+    private Usuario usuario;
 
     public void addDetallePedido(int cantidad, Producto producto) {
         DetallePedido detalle = DetallePedido.builder()

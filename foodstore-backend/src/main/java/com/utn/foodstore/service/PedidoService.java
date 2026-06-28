@@ -109,4 +109,42 @@ public class PedidoService {
                 .sum();
     }
 
+    public java.util.List<PedidoDto> obtenerTodos() {
+        return pedidoRepository.findAll().stream()
+                .map(pedido -> PedidoDto.builder()
+                        .id(pedido.getId())
+                        // Concatenamos nombre y apellido para meterlo en tu campo clienteNombre
+                        .clienteNombre(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido())
+                        .total(pedido.getTotal())
+                        .estado(pedido.getEstado().toString())
+                        .build()
+                )
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+
+    @Transactional
+    public PedidoDto cambiarEstado(Long id, String nuevoEstado) {
+        // 1. Buscamos el pedido en la base de datos usando tu repositorio de Spring Data JPA
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
+
+        // 2. Convertimos el String que viene de la web al ENUM exacto de tus imports (EstadoPedido)
+        EstadoPedido estadoEnum = EstadoPedido.valueOf(nuevoEstado.toUpperCase());
+
+        // 3. Modificamos el estado en el objeto
+        pedido.setEstado(estadoEnum);
+
+        // 4. Persistimos el cambio (Hibernate se encarga de generar el UPDATE en H2)
+        Pedido pedidoActualizado = pedidoRepository.save(pedido);
+
+        // 5. Devolvemos el DTO ensamblado con el Builder para que viaje limpio hacia TypeScript
+        return PedidoDto.builder()
+                .id(pedidoActualizado.getId())
+                .clienteNombre(pedidoActualizado.getUsuario().getNombre() + " " + pedidoActualizado.getUsuario().getApellido())
+                .total(pedidoActualizado.getTotal())
+                .estado(pedidoActualizado.getEstado().name())
+                .build();
+    }
+
 }//Fin de clase
