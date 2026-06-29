@@ -1,60 +1,43 @@
+import { cargarPantallaLogin } from './auth/login.ts';
 import './style.css';
 import { cargarHomeStore } from './pages/store/homeStore.ts';
 import { cargarAdminDashboard } from './pages/admin/adminHome.ts';
+import { cargarHistorialPedidosCliente } from './pages/client/orders/orders.ts';
+
 interface UsuarioSesion {
   id: number;
   nombre: string;
   rol: 'USUARIO' | 'ADMIN';
 }
 
-export let usuarioLogueado: UsuarioSesion | null = JSON.parse(localStorage.getItem('usuario_sesion') || 'null');
+// Arranca en null originalmente
+export let usuarioLogueado: UsuarioSesion | null = null;
 
 export function renderizarApp() {
+  // 1. CORREGIDO: Cada vez que se renderice la app, actualizamos la variable leyendo el disco fresco
+  usuarioLogueado = JSON.parse(localStorage.getItem('usuario_sesion') || 'null');
+
   const app = document.querySelector<HTMLDivElement>('#app');
   if (!app) return;
 
+  // Si no hay nadie logueado, delegamos al módulo auth y cortamos acá.
   if (!usuarioLogueado) {
-    app.innerHTML = `
-      <div class="auth-container">
-        <h2>🔐 Iniciar Sesión - Food Store</h2>
-        <form id="form-login" class="form-auth">
-          <label>Seleccionar Usuario para Simular Entrada:</label>
-          <select id="login-select" class="select-pago" style="margin-bottom: 15px; width: 100%;">
-            <option value="cliente">👤 Juan Perez (Rol: USUARIO)</option>
-            <option value="admin">👑 Ana Martinez (Rol: ADMIN)</option>
-          </select>
-          <button type="submit" class="btn-confirmar">Ingresar al Sistema</button>
-        </form>
-      </div>
-    `;
-
-    document.getElementById('form-login')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const seleccion = (document.getElementById('login-select') as HTMLSelectElement).value;
-
-      if (seleccion === 'admin') {
-        usuarioLogueado = { id: 1, nombre: "Ana Martinez", rol: "ADMIN" };
-      } else {
-        // 👇 CORREGIDO: Cambiado de 'name' a 'nombre' para respetar tu interfaz
-        usuarioLogueado = { id: 2, nombre: "Juan Perez", rol: "USUARIO" };
-      }
-
-      localStorage.setItem('usuario_sesion', JSON.stringify(usuarioLogueado));
-      renderizarApp();
-    });
-    return;
+    cargarPantallaLogin(); 
+    return; 
   }
 
+  // Si hay sesión válida, inyectamos la Navbar estructural
   app.innerHTML = `
     <nav class="navbar-global">
       <div class="nav-info">
         <span>👤 Sesión: <strong>${usuarioLogueado.nombre}</strong> (${usuarioLogueado.rol})</span>
-      </div>
-      <div class="nav-links">
-        ${usuarioLogueado.rol === 'ADMIN' ? '<button id="btn-nav-admin" class="btn-sesion">📊 Panel Admin</button>' : ''}
-        <button id="btn-nav-store" class="btn-sesion">🍔 Tienda Store</button>
-        <button id="btn-logout" class="btn-sesion" style="background-color: #dc3545;">🚪 Cerrar Sesión</button>
-      </div>
+      </div>      
+  <div class="nav-links">
+    ${usuarioLogueado.rol === 'ADMIN' ? '<button id="btn-nav-admin" class="btn-sesion">📊 Panel Admin</button>' : ''}
+    <button id="btn-nav-orders" class="btn-sesion" style="background-color: #6f42c1;">📋 Mis Pedidos</button> <!-- 👈 AGREGADO -->
+    <button id="btn-nav-store" class="btn-sesion">🍔 Tienda Store</button>
+    <button id="btn-logout" class="btn-sesion" style="background-color: #dc3545;">🚪 Cerrar Sesión</button>
+  </div>
     </nav>
     <div id="contenido-pagina"></div>
   `;
@@ -73,8 +56,8 @@ export function renderizarApp() {
     cargarAdminDashboard();
   });
 
-  document.getElementById('btn-nav-admin')?.addEventListener('click', () => {
-    cargarAdminDashboard();
+  document.getElementById('btn-nav-orders')?.addEventListener('click', () => {
+    cargarHistorialPedidosCliente();
   });
 
   cargarPaginaPorDefecto();
@@ -90,7 +73,5 @@ function cargarPaginaPorDefecto() {
     cargarHomeStore(); 
   }
 }
-
-
 
 renderizarApp();

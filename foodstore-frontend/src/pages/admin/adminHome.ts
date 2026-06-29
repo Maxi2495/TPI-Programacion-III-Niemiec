@@ -1,9 +1,16 @@
 import { cargarGestionPedidosAdmin } from './orders.ts';
 import { cargarGestionProductos } from './products.ts';
+import { usuarioLogueado } from '../../main.ts';
 
 export async function cargarAdminDashboard() {
   const contenedor = document.getElementById('contenido-pagina');
   if (!contenedor) return;
+
+  //Validador segun el rol
+  if (!usuarioLogueado || usuarioLogueado.rol !== 'ADMIN') {
+    contenedor.innerHTML = `<p style="color:red; padding:20px; font-weight:bold;">⛔ Acceso Denegado: No tiene permisos de Administrador para ver esta sección.</p>`;
+    return; 
+  }
 
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Compilando métricas del servidor Spring Boot...</div>`;
 

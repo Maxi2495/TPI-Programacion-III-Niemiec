@@ -110,15 +110,29 @@ public class PedidoService {
     }
 
     public java.util.List<PedidoDto> obtenerTodos() {
+        // Formateador estándar de Java para dejar la fecha y hora súper prolija (Ej: 29/06/2026 19:45)
+        java.time.format.DateTimeFormatter formateador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         return pedidoRepository.findAll().stream()
-                .map(pedido -> PedidoDto.builder()
-                        .id(pedido.getId())
-                        // Concatenamos nombre y apellido para meterlo en tu campo clienteNombre
-                        .clienteNombre(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido())
-                        .total(pedido.getTotal())
-                        .estado(pedido.getEstado().toString())
-                        .build()
-                )
+                .map(pedido -> {
+                    // 1. Convertimos la colección de detalles de Hibernate a una lista limpia de textos para la web
+                    java.util.List<String> prodsMapeados = pedido.getDetalles().stream()
+                            .map(detalle -> detalle.getCantidad() + "x " + detalle.getProducto().getNombre())
+                            .collect(java.util.stream.Collectors.toList());
+
+                    // 2. Formateamos el timestamp de auditoría del pedido
+                    String fechaHoraStr = pedido.getCreatedAt() != null ? pedido.getCreatedAt().format(formateador) : "Fecha no disponible";
+
+                    // 3. Ensamblamos el DTO expandido
+                    return PedidoDto.builder()
+                            .id(pedido.getId())
+                            .clienteNombre(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido())
+                            .total(pedido.getTotal())
+                            .estado(pedido.getEstado().toString())
+                            .fechaHora(fechaHoraStr) // 👈 Seteamos la fecha y hora real del servidor
+                            .productosDetalle(prodsMapeados) // 👈 Seteamos los productos reales comprados
+                            .build();
+                })
                 .collect(java.util.stream.Collectors.toList());
     }
 
