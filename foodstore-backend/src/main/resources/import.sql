@@ -9,3 +9,4 @@ INSERT INTO productos (id, eliminado, created_at, version, nombre, precio, descr
 
 -- 3. Usuarios (Agregamos version con valor 0 para Juan Perez)
 INSERT INTO usuarios (id, eliminado, created_at, version, nombre, apellido, mail, celular, rol, contrasena) VALUES (2, false, NOW(), 0, 'Juan', 'Perez', 'cliente@food.com', '1198765432', 'USUARIO', 'cliente123');
+INSERT INTO usuarios (id, eliminado, created_at, version, nombre, apellido, mail, celular, rol, contrasena) VALUES (1, false, NOW(), 0, 'Ana', 'Martinez', 'admin@food.com', '1122334455', 'ADMIN', 'admin123');

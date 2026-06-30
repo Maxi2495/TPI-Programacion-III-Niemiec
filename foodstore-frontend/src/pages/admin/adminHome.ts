@@ -1,120 +1,140 @@
-import { cargarGestionPedidosAdmin } from './orders.ts';
-import { cargarGestionProductos } from './products.ts';
 import { usuarioLogueado } from '../../main.ts';
+import { cargarGestionProductos } from './products.ts';
+import { cargarGestionPedidosAdmin } from './orders.ts';
 
 export async function cargarAdminDashboard() {
   const contenedor = document.getElementById('contenido-pagina');
   if (!contenedor) return;
 
-  //Validador segun el rol
+  // 🛡️ VALIDACIÓN DE SESIÓN Y ROL
   if (!usuarioLogueado || usuarioLogueado.rol !== 'ADMIN') {
-    contenedor.innerHTML = `<p style="color:red; padding:20px; font-weight:bold;">⛔ Acceso Denegado: No tiene permisos de Administrador para ver esta sección.</p>`;
-    return; 
+    contenedor.innerHTML = `
+      <div class="auth-container" style="max-width: 500px; padding: 30px;">
+        <h2 style="color:#dc3545;">⛔ Acceso Denegado</h2>
+        <p style="color:#6c757d;">No cuenta con permisos de administrador para inspeccionar esta sección protegida.</p>
+      </div>
+    `;
+    return;
   }
 
-  contenedor.innerHTML = `<div style="padding: 20px;">⏳ Compilando métricas del servidor Spring Boot...</div>`;
+  contenedor.innerHTML = `<div style="padding: 20px;">⏳ Consolidando métricas analíticas desde el servidor...</div>`;
 
   try {
-    // 1. Consumimos las APIs de Java en paralelo para armar las tarjetas estadísticas
-    const [resProductos, resPedidos] = await Promise.all([
+    const [resProductos, resCategorias, resPedidos] = await Promise.all([
       fetch('http://localhost:8080/api/products'),
+      fetch('http://localhost:8080/api/categories'),
       fetch('http://localhost:8080/api/orders')
     ]);
 
     const productos: any[] = await resProductos.json();
+    const categorias: any[] = await resCategorias.json();
     const pedidos: any[] = await resPedidos.json();
 
-    // 2. Procesamos las métricas en memoria usando lógica analítica (como pide el PDF)
+    // 📊 1. PROCESAMIENTO OPERATIVO DE CATEGORÍAS
+    const totalCategorias = categorias.length;
+    // Filtro para las categorias activas
+    const categoriasActivas = categorias.filter(c => c.eliminado !== true).length;
+    const categoriasInactivas = totalCategorias - categoriasActivas;
+
+    // 📦 2. PROCESAMIENTO OPERATIVO DE PRODUCTOS
     const totalProductos = productos.length;
     const productosDisponibles = productos.filter(p => p.stock > 0).length;
-    const totalPedidos = pedidos.length;
-    
-    // Calculamos la recaudación filtrando solo los pedidos terminados
-    const pedidosTerminados = pedidos.filter(p => p.estado === 'TERMINADO');
-    const recaudacionTotal = pedidosTerminados.reduce((acc, p) => acc + p.total, 0);
+    const productosSinStock = totalProductos - productosDisponibles;
 
-    // Contamos pedidos por estado para el panel de resumen
-    const pendientes = pedidos.filter(p => p.estado === 'PENDIENTE').length;
-    const terminados = pedidosTerminados.length;
+    // 📋 3. CONTEO ESTRICTO DE PEDIDOS POR ESTADO
+    const totalPedidos = pedidos.length; 
+    const pedidosPendientes = pedidos.filter(p => p.estado.toUpperCase() === 'PENDIENTE').length;
+    const pedidosConfirmados = pedidos.filter(p => p.estado.toUpperCase() === 'CONFIRMADO').length;
+    const pedidosTerminados = pedidos.filter(p => p.estado.toUpperCase() === 'TERMINADO').length;
+    const pedidosCancelados = pedidos.filter(p => p.estado.toUpperCase() === 'CANCELADO').length;
 
-    // 3. Renderizamos la interfaz con la estructura de tarjetas solicitada
+    // Renderizado estructural del Dashboard
     contenedor.innerHTML = `
       <div class="admin-dashboard-container">
-        <h2>📊 Dashboard de Control Gerencial</h2>
-        <p style="color: #6c757d; font-style: italic; margin-bottom: 25px;">Métricas consolidadas en tiempo real desde la base de datos H2</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div>
+            <h2>📊 Panel de Control Gerencial y Auditoría</h2>
+            <p style="color: #6c757d; margin: 0; font-style: italic;">Métricas consolidadas del negocio en tiempo real desde la base de datos en memoria.</p>
+          </div>
+        </div>
 
         <div class="grid-tarjetas-admin">
+          <div class="tarjeta-metrica violeta">
+            <h3>📂 Total Categorías</h3>
+            <div class="numero-metrica">${totalCategorias}</div>
+            <p style="margin:0; font-size:0.85rem; color:#6c757d;">Grupos de menú activos</p>
+          </div>
           <div class="tarjeta-metrica azul">
             <h3>📦 Total Productos</h3>
-            <p class="numero-metrica">${totalProductos}</p>
-            <span>Ítems registrados</span>
-          </div>
-          <div class="tarjeta-metrica verde">
-            <h3>⚡ Disponibles</h3>
-            <p class="numero-metrica">${productosDisponibles}</p>
-            <span>Con stock en cocina</span>
-          </div>
-          <div class="tarjeta-metrica violeta">
-            <h3>📋 Total Pedidos</h3>
-            <p class="numero-metrica">${totalPedidos}</p>
-            <span>Órdenes históricas</span>
+            <div class="numero-metrica">${totalProductos}</div>
+            <p style="margin:0; font-size:0.85rem; color:#6c757d;">Ítems registrados en catálogo</p>
           </div>
           <div class="tarjeta-metrica oro">
-            <h3>💵 Recaudación Real</h3>
-            <p class="numero-metrica">$ ${recaudacionTotal.toFixed(2)}</p>
-            <span>Pedidos terminados</span>
+            <h3>📋 Total Pedidos</h3>
+            <div class="numero-metrica">${totalPedidos}</div>
+            <p style="margin:0; font-size:0.85rem; color:#6c757d;">Órdenes globales históricas</p>
+          </div>
+          <div class="tarjeta-metrica verde">
+            <h3>✅ Ítems Disponibles</h3>
+            <div class="numero-metrica">${productosDisponibles}</div>
+            <p style="margin:0; font-size:0.85rem; color:#6c757d;">Con unidades operativas en cocina</p>
           </div>
         </div>
 
-        <div class="panel-resumen-detallado">
-          <h3>🔍 Resumen de Operaciones</h3>
+        <div class="panel-resumen-detallado" style="margin-bottom: 30px;">
+          <h3>🔍 Desglose Operativo del Establecimiento</h3>
           <div class="resumen-split">
+            
             <div class="resumen-bloque">
-              <h4>Estado de las Órdenes</h4>
-              <ul>
-                <li>⏳ Pedidos en preparación (PENDIENTES): <strong>${pendientes}</strong></li>
-                <li>✅ Pedidos cobrados (TERMINADOS): <strong>${terminados}</strong></li>
+              <h4>📋 Auditoría de Catálogo</h4>
+              <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 8px;">
+                <li>📂 <strong>Categorías Activas:</strong> <span style="color:#28a745; font-weight:bold;">${categoriasActivas} </span> (${categoriasInactivas} inactivas).</li>
+                <li>📦 <strong>Productos Activos (Disponibles):</strong> <span style="color:#28a745; font-weight:bold;">${productosDisponibles} ítems</span> con stock.</li>
+                <li>⚠️ <strong>Productos Inactivos (Sin Stock):</strong> <span style="color:#dc3545; font-weight:bold;">${productosSinStock} ítems</span> a reponer.</li>
               </ul>
             </div>
+
             <div class="resumen-bloque">
-              <h4>Enlaces de Gestión Directa</h4>
-              <p style="font-size:0.9rem; color:#6c757d;">Acceso modular del Administrador:</p>
-              <div style="display:flex; gap:10px; margin-top:10px;">
-                <button id="btn-dashboard-ir-productos" class="btn-admin" style="background-color:#17a2b8;">📦 Control de Stock</button>
-                <button id="btn-dashboard-ir-pedidos" class="btn-admin" style="background-color:#6f42c1;">📋 Historial Global</button>
-              </div>
+              <h4>⚡ Pedidos por Estado</h4>
+              <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 6px;">
+                <li>⏳ <strong>Pendientes de aprobación:</strong> ${pedidosPendientes} órdenes.</li>
+                <li>👨‍🍳 <strong>En preparación (Confirmados):</strong> ${pedidosConfirmados} órdenes.</li>
+                <li>🛵 <strong>Entregados (Terminados):</strong> <span style="color:#28a745; font-weight:bold;">${pedidosTerminados} órdenes finalizadas</span>.</li>
+                <li>❌ <strong>Cancelados:</strong> ${pedidosCancelados} órdenes.</li>
+              </ul>
             </div>
+
           </div>
         </div>
+
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eef0f2;">
+          <h3 style="margin-top:0; margin-bottom:15px; font-size:1.1rem; color:#495057;">🛠️ Enlaces de Gestión Directa</h3>
+          <div style="display:flex; gap:15px;">
+            <button id="btn-link-modulo-productos" class="btn-admin" style="background-color: #17a2b8;">
+              📦 Control de Stock e Inventario (ABM)
+            </button>
+            <button id="btn-link-modulo-pedidos" class="btn-admin" style="background-color: #6f42c1;">
+              📋 Monitor de Auditoría Global de Pedidos
+            </button>
+          </div>
+        </div>
+
       </div>
     `;
 
-    // Acoplamos los eventos a los botones internos del Dashboard para navegar
-    configurarEventosDashboard();
-
+    configurarEventosDashboardEnlaces();
   } catch (error) {
-    console.error("Error al compilar el Dashboard:", error);
-    contenedor.innerHTML = `<p style="color:red; padding:20px;">❌ Error de comunicación con las APIs analíticas de Spring Boot.</p>`;
+    console.error(error);
+    contenedor.innerHTML = `<p style="color:red; padding:20px;">Error de red al consolidar las métricas de administración.</p>`;
   }
 }
 
-function configurarEventosDashboard() {
-  // 1. Evento para ir al control de stock de productos
-  document.getElementById('btn-dashboard-ir-productos')?.addEventListener('click', () => { 
+function configurarEventosDashboardEnlaces() {
+  document.getElementById('btn-link-modulo-productos')?.addEventListener('click', () => { 
     cargarGestionProductos(); 
   });  
 
-  // 2. CORREGIDO: Adentro de la función, el botón ya existe en el DOM y se engancha al módulo de órdenes
-  document.getElementById('btn-dashboard-ir-pedidos')?.addEventListener('click', () => {
+  document.getElementById('btn-link-modulo-pedidos')?.addEventListener('click', () => {
     cargarGestionPedidosAdmin();
   });
 }
-
-
-
-
-  
-
-
-
-

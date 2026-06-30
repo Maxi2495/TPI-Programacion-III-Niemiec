@@ -9,7 +9,7 @@ export async function cargarPantallaLogin() {
     <div class="auth-container">
       <h2>🔐 Iniciar Sesión - Food Store</h2>
       <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 20px; text-align:center;">
-        Ingrese sus credenciales de acceso registradas en la base de datos H2.
+        Ingresá tus credenciales de acceso.
       </p>
       
       <form id="form-login-real" class="form-auth">
