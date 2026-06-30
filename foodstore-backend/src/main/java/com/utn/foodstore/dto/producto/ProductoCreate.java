@@ -1,12 +1,17 @@
 package com.utn.foodstore.dto.producto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data //getters y setters automáticos
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductoCreate {
 
-    // Validaciones de Spring. El mensaje avisa el porque
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String nombre;
@@ -23,7 +28,8 @@ public class ProductoCreate {
 
     @NotNull(message = "El ID de categoría es obligatorio")
     private Long categoriaId;
+
+    // ➕ LOS DOS CAMPOS NUEVOS: Ahora el DTO sí puede transportar esta data
+    private String imagen;
+    private Boolean disponible;
 }
-
-
-

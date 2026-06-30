@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/products")
 public class ProductoController {
 
@@ -30,5 +31,20 @@ public class ProductoController {
     @GetMapping
     public ResponseEntity<List<ProductoDto>> listar() {
         return ResponseEntity.ok(productoService.listarActivos());
+    }
+
+    // 🛠️ HU-004: PUT /api/products/{id} - Editar e inhabilitar disponibilidad
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductoDto> actualizar(@PathVariable Long id, @Valid @RequestBody ProductoCreate dto) {
+        // Nota: Si en tu service el método se llama distinto (ej: editar), cambialo acá.
+        return ResponseEntity.ok(productoService.actualizar(id, dto));
+    }
+
+    // 🛠️ HU-005: DELETE /api/products/{id} - Baja o eliminación de producto
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        // Nota: Si en tu service se llama eliminarLogico o darDeBaja, adaptalo al nombre exacto.
+        productoService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

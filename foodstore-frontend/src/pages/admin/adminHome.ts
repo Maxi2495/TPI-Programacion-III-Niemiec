@@ -1,6 +1,7 @@
 import { usuarioLogueado } from '../../main.ts';
-import { cargarGestionProductos } from './products.ts';
+import { cargarGestionProductos } from './products/products.ts';
 import { cargarGestionPedidosAdmin } from './orders.ts';
+import { cargarGestionCategorias } from './categories/categories.ts';
 
 export async function cargarAdminDashboard() {
   const contenedor = document.getElementById('contenido-pagina');
@@ -54,7 +55,6 @@ export async function cargarAdminDashboard() {
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <div>
             <h2>📊 Panel de Control Gerencial y Auditoría</h2>
-            <p style="color: #6c757d; margin: 0; font-style: italic;">Métricas consolidadas del negocio en tiempo real desde la base de datos en memoria.</p>
           </div>
         </div>
 
@@ -80,6 +80,8 @@ export async function cargarAdminDashboard() {
             <p style="margin:0; font-size:0.85rem; color:#6c757d;">Con unidades operativas en cocina</p>
           </div>
         </div>
+
+        
 
         <div class="panel-resumen-detallado" style="margin-bottom: 30px;">
           <h3>🔍 Desglose Operativo del Establecimiento</h3>
@@ -109,11 +111,14 @@ export async function cargarAdminDashboard() {
 
         <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eef0f2;">
           <h3 style="margin-top:0; margin-bottom:15px; font-size:1.1rem; color:#495057;">🛠️ Enlaces de Gestión Directa</h3>
-          <div style="display:flex; gap:15px;">
+          <div style="display:flex; gap:15px; flex-wrap: wrap;">
+            <button id="btn-link-modulo-categorias" class="btn-admin" style="background-color: #6f42c1;">
+              📂 Configuración de Categorías
+            </button>
             <button id="btn-link-modulo-productos" class="btn-admin" style="background-color: #17a2b8;">
               📦 Control de Stock e Inventario (ABM)
             </button>
-            <button id="btn-link-modulo-pedidos" class="btn-admin" style="background-color: #6f42c1;">
+            <button id="btn-link-modulo-pedidos" class="btn-admin" style="background-color: #17a2b8;">
               📋 Monitor de Auditoría Global de Pedidos
             </button>
           </div>
@@ -136,5 +141,9 @@ function configurarEventosDashboardEnlaces() {
 
   document.getElementById('btn-link-modulo-pedidos')?.addEventListener('click', () => {
     cargarGestionPedidosAdmin();
+  });
+
+  document.getElementById('btn-link-modulo-categorias')?.addEventListener('click', () => {
+    cargarGestionCategorias();
   });
 }
