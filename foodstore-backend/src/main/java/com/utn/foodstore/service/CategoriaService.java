@@ -24,11 +24,11 @@ public class CategoriaService {
         Categoria nuevaCategoria = new Categoria();
         nuevaCategoria.setNombre(dto.getNombre());
         nuevaCategoria.setDescripcion(dto.getDescripcion());
-        nuevaCategoria.setImagen(dto.getImagen()); // El cable que faltaba
+        nuevaCategoria.setImagen(dto.getImagen());
 
         Categoria guardada = categoriaRepository.save(nuevaCategoria);
 
-        // Armamos el paquetito limpio para la web
+        // dto de vuelta a la web
         return CategoriaDto.builder()
                 .id(guardada.getId())
                 .nombre(guardada.getNombre())
@@ -38,7 +38,7 @@ public class CategoriaService {
     }
 
     public List<CategoriaDto> listarActivas() {
-        //trae TODAS las categorías que no estén dadas de baja
+        //trae TODAS las categorias que no esten dadas de baja
         List<Categoria> categoriasReales = categoriaRepository.findByEliminadoFalse();
 
         //transformO Entidades a DTOs
@@ -52,7 +52,7 @@ public class CategoriaService {
                 .toList(); //A lista.
     }
 
-    // Método auxiliar (privado) para buscar la entidad y lanzar el error 404 si no existe o está eliminada
+
     private Categoria obtenerEntidad(Long id) {
         return categoriaRepository.findByIdAndEliminadoFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + id));

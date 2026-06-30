@@ -8,6 +8,7 @@ import com.utn.foodstore.model.Usuario;
 import com.utn.foodstore.model.enums.Rol;
 import com.utn.foodstore.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -15,9 +16,12 @@ import java.util.Optional;
 public class UsuarioService { //Aca el usuario se registra y se matchea el logueo
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // HU-006: Registrar Usuario
@@ -31,7 +35,7 @@ public class UsuarioService { //Aca el usuario se registra y se matchea el logue
                 .nombre(dto.getNombre())
                 .apellido(dto.getApellido())
                 .mail(dto.getMail().trim().toLowerCase())
-                .contrasena(dto.getContrasena())
+                .contrasena(passwordEncoder.encode(dto.getContrasena())) //encriptacion
                 .rol(Rol.USUARIO) //Para que por defecto sea usuario comun
                 .build();
 
@@ -44,8 +48,8 @@ public class UsuarioService { //Aca el usuario se registra y se matchea el logue
         Usuario usuario = usuarioRepository.findByMailAndEliminadoFalse(dto.getMail().trim().toLowerCase())
                 .orElseThrow(() -> new ResourceNotFoundException("Credenciales inválidas o usuario inexistente"));
 
-        // Verificacion en texto plano
-        if (!usuario.getContrasena().equals(dto.getContrasena())) {
+        // Verificacion con BCrypt (reemplazamos el .equals plano)
+        if (!passwordEncoder.matches(dto.getContrasena(), usuario.getContrasena())) {
             throw new RuntimeException("Credenciales inválidas");
         }
 

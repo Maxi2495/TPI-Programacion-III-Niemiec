@@ -91,7 +91,7 @@ public class PedidoService {
         //Armado de dto para devolver al cliente
         return PedidoDto.builder()
                 .id(pedidoGuardado.getId())
-                .clienteNombre(comprador.getNombre() + " " + comprador.getApellido())
+                .clienteNombre(comprador != null ? comprador.getNombre() + " " + comprador.getApellido() : "Consumidor Final")
                 .total(pedidoGuardado.getTotal())
                 .estado(pedidoGuardado.getEstado().name())
                 .build();
@@ -126,8 +126,7 @@ public class PedidoService {
                     // 3. Ensamblamos el DTO expandido
                     return PedidoDto.builder()
                             .id(pedido.getId())
-                            .clienteNombre(pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido())
-                            .total(pedido.getTotal())
+                            .clienteNombre(pedido.getUsuario() != null ? pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido() : "Consumidor Final")                            .total(pedido.getTotal())
                             .estado(pedido.getEstado().toString())
                             .fechaHora(fechaHoraStr) // 👈 Seteamos la fecha y hora real del servidor
                             .productosDetalle(prodsMapeados) // 👈 Seteamos los productos reales comprados
@@ -155,8 +154,7 @@ public class PedidoService {
         // 5. Devolvemos el DTO ensamblado con el Builder para que viaje limpio hacia TypeScript
         return PedidoDto.builder()
                 .id(pedidoActualizado.getId())
-                .clienteNombre(pedidoActualizado.getUsuario().getNombre() + " " + pedidoActualizado.getUsuario().getApellido())
-                .total(pedidoActualizado.getTotal())
+                .clienteNombre(pedidoActualizado.getUsuario() != null ? pedidoActualizado.getUsuario().getNombre() + " " + pedidoActualizado.getUsuario().getApellido() : "Consumidor Final")                .total(pedidoActualizado.getTotal())
                 .estado(pedidoActualizado.getEstado().name())
                 .build();
     }

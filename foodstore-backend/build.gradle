@@ -31,4 +31,6 @@ dependencies {
     // Lombok (Para no escribir Getters y Setters)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    //Esta linea es para encriptar constraseñas
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
