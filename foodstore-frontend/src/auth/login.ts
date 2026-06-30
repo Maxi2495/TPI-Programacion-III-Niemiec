@@ -23,7 +23,8 @@ export async function cargarPantallaLogin() {
       </form>
       
       <div style="margin-top: 15px; font-size: 0.8rem; color: #6c757d; text-align: center;">
-        💡 <em>Prueba rápida: cliente@food.com / cliente123</em>
+        💡 <em>Credenciales Cliente: cliente@food.com / cliente123</em>
+            <em>Credenciales Admin: admin@food.com / admnin123</em>
       </div>
 
       <div style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
@@ -71,7 +72,7 @@ async function procesarAutenticacionBackend(e: Event) {
 
       localStorage.setItem('usuario_sesion', JSON.stringify(sesionFormateada));
       
-      alert(`🎉 ¡Bienvenido/a, ${sesionFormateada.nombre}! Credenciales validadas en el Backend.`);
+      alert(`🎉 ¡Bienvenido/a, ${sesionFormateada.nombre}!`);
       renderizarApp();
     } else {
       const errorMsg = await respuesta.text();
@@ -79,6 +80,6 @@ async function procesarAutenticacionBackend(e: Event) {
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar conectar con el endpoint de autenticación.");
+    alert("❌ Error de red al intentar conectar.");
   }
 }
