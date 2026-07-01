@@ -70,9 +70,7 @@ public class CategoriaService {
         Categoria cat = obtenerEntidad(id);
 
         //Solo actualizamos lo que el cliente nos mandoa
-        if (dto.getNombre() != null) cat.setNombre(dto.getNombre());
-        if (dto.getDescripcion() != null) cat.setDescripcion(dto.getDescripcion());
-        if (dto.getImagen() != null) cat.setImagen(dto.getImagen());
+        dto.applyTo(cat);
 
         Categoria guardada = categoriaRepository.save(cat);
         return CategoriaDto.builder().id(guardada.getId()).nombre(guardada.getNombre())

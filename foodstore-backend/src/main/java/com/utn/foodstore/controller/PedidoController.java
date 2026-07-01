@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")  //Direccion a donde llega el pedido desde la web
 @CrossOrigin(origins = "http://localhost:5173", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE}) // 👈 Aseguramos PATCH acá
@@ -30,9 +32,15 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.calcularTotalFacturado());
     }
 
+    // Busca orden por id
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoDto> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(pedidoService.buscarPorId(id));
+    }
+
     @GetMapping
     public ResponseEntity<java.util.List<PedidoDto>> listarTodos() {
-        // Asumiendo que tu servicio tiene un método para listar todo o buscar todos
+        
         return ResponseEntity.ok(pedidoService.obtenerTodos());
     }
 
@@ -42,5 +50,23 @@ public class PedidoController {
             @RequestParam String nuevoEstado
     ) {
         return ResponseEntity.ok(pedidoService.cambiarEstado(id, nuevoEstado));
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<PedidoDto>> listarPorUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(pedidoService.obtenerHistorialUsuario(usuarioId));
+    }
+
+    // Actualizacion PUT
+    @PutMapping("/{id}")
+    public ResponseEntity<com.utn.foodstore.dto.pedido.PedidoDto> actualizarFormal(@PathVariable Long id, @RequestBody com.utn.foodstore.dto.pedido.PedidoEdit dto) {
+        return ResponseEntity.ok(pedidoService.actualizarFormal(id, dto));
+    }
+
+    //endpoint de Baja logica
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        pedidoService.eliminarPedido(id);
+        return ResponseEntity.noContent().build();
     }
 }

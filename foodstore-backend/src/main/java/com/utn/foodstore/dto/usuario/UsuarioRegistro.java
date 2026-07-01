@@ -8,9 +8,11 @@ import lombok.Data;
 @Data
 public class UsuarioRegistro {
     @NotBlank(message = "El nombre es obligatorio")
+    @Size(min = 2, max = 50, message = "Minimo 2 caracteres / Maximo 50 caracteres")
     private String nombre;
 
     @NotBlank(message = "El apellido es obligatorio")
+    @Size(min = 2, max = 50, message = "Minimo 2 caracteres / Maximo 50 caracteres")
     private String apellido;
 
     @NotBlank(message = "El email es obligatorio")

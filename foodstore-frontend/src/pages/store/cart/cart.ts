@@ -11,11 +11,10 @@ export async function cargarCarritoStore() {
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Validando stock disponible con la cocina...</div>`;
 
   try {
-    // Traemos los productos frescos para validar stock real e imágenes
+    
     const respuesta = await fetch('http://localhost:8080/api/products');
     productosFresh = await respuesta.json();
     
-    // Leemos el carrito guardado en el disco
     carritoLocal = JSON.parse(localStorage.getItem('carrito_foodstore') || '[]');
     
     renderizarInterfazCarrito(contenedor);
@@ -26,7 +25,7 @@ export async function cargarCarritoStore() {
 }
 
 function renderizarInterfazCarrito(contenedor: HTMLElement) {
-  // ● Estado vacío con mensaje y botón a la tienda requerido por la cátedra
+  // Empieza vacío con mensaje y botón a la tienda  (requisito)
   if (carritoLocal.length === 0) {
     contenedor.innerHTML = `
       <div class="auth-container" style="max-width: 500px; padding: 40px;">
@@ -54,7 +53,6 @@ function renderizarInterfazCarrito(contenedor: HTMLElement) {
   `;
 
   carritoLocal.forEach(item => {
-    // Buscamos el producto fresco para extraer la imagen y el stock de la cocina
     const prodRef = productosFresh.find(p => p.id === item.productoId);
     const urlImagen = prodRef ? prodRef.imagen : 'https://placehold.co/100';
     const stockMaximo = prodRef ? prodRef.stock : 99;
@@ -104,6 +102,14 @@ function renderizarInterfazCarrito(contenedor: HTMLElement) {
           </div>
 
           <form id="form-checkout-carrito" style="display: flex; flex-direction: column; gap: 10px;">
+            
+            <label style="font-weight: bold; font-size: 0.85rem; color:#495057;">💳 Forma de Pago *</label>
+            <select id="checkout-forma-pago" class="select-pago" required>
+              <option value="EFECTIVO">💵 Efectivo en Caja</option>
+              <option value="TARJETA">💳 Tarjeta de Crédito / Débito</option>
+              <option value="TRANSFERENCIA">📱 Transferencia / Cuenta DNI</option>
+            </select>
+
             <label style="font-weight: bold; font-size: 0.85rem; color:#495057;">📱 Teléfono de Contacto *</label>
             <input type="text" id="checkout-telefono" class="select-pago" required placeholder="Ej: 3513445566">
             
@@ -126,7 +132,7 @@ function renderizarInterfazCarrito(contenedor: HTMLElement) {
 }
 
 function configurarEventosInterfazCarrito() {
-  // Eventos para modificar cantidad (+/-) y eliminar de forma reactiva
+  // botoncitos (+/-) y eliminar
   carritoLocal.forEach(item => {
     const prodRef = productosFresh.find(p => p.id === item.productoId);
     const stockMaximo = prodRef ? prodRef.stock : 99;
@@ -141,7 +147,7 @@ function configurarEventosInterfazCarrito() {
       guardarYRefrescarCarrito();
     });
 
-    // Control de Sumar (Validando stock de la cocina)
+    // Control de Sumar
     document.getElementById(`btn-sumar-${item.productoId}`)?.addEventListener('click', () => {
       if (item.cantidad < stockMaximo) {
         item.cantidad++;
@@ -151,7 +157,7 @@ function configurarEventosInterfazCarrito() {
       }
     });
 
-    // Control de Eliminar Renglón
+    // Control de Eliminar 
     document.getElementById(`btn-eliminar-${item.productoId}`)?.addEventListener('click', () => {
       carritoLocal = carritoLocal.filter(i => i.productoId !== item.productoId);
       guardarYRefrescarCarrito();
@@ -167,13 +173,13 @@ function configurarEventosInterfazCarrito() {
   // Volver a la tienda
   document.getElementById('btn-checkout-seguir-comprando')?.addEventListener('click', cargarHomeStore);
 
-  // Envío final de la orden de compra (POST /api/orders)
+  // Envio final de la orden de compra
   document.getElementById('form-checkout-carrito')?.addEventListener('submit', procesarCheckoutFinalBackend);
 }
 
 function guardarYRefrescarCarrito() {
   localStorage.setItem('carrito_foodstore', JSON.stringify(carritoLocal));
-  cargarCarritoStore(); // Recarga reactiva de la interfaz
+  cargarCarritoStore(); 
 }
 
 async function procesarCheckoutFinalBackend(e: Event) {
@@ -185,18 +191,18 @@ async function procesarCheckoutFinalBackend(e: Event) {
   }
 
   const telefono = (document.getElementById('checkout-telefono') as HTMLInputElement).value;
+  const formaPago = (document.getElementById('checkout-forma-pago') as HTMLSelectElement).value;
 
-  // Armamos los detalles mapeados con el DetallePedidoDto de tu Java
+  
   const detallesMapeados = carritoLocal.map(item => ({
     productoId: item.productoId,
     cantidad: item.cantidad
   }));
 
-  // Cuerpo exacto esperado por el @RequestBody de tu PedidoCreate en Spring Boot
   const cuerpoPedidoDto = {
     usuarioId: usuarioLogueado.id,
-    detalles: detallesMapeados
-    // Nota: El teléfono lo podés mandar si tu DTO lo tuviera, sino cumple con la validación HTML del campo requerido.
+    detalles: detallesMapeados,
+    formaPago: formaPago
   };
 
   try {

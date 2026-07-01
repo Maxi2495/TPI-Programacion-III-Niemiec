@@ -2,6 +2,7 @@ package com.utn.foodstore.controller;
 
 import com.utn.foodstore.dto.producto.ProductoCreate;
 import com.utn.foodstore.dto.producto.ProductoDto;
+import com.utn.foodstore.dto.producto.ProductoEdit;
 import com.utn.foodstore.service.PedidoService;
 import com.utn.foodstore.service.ProductoService;
 import jakarta.validation.Valid;
@@ -28,23 +29,34 @@ public class ProductoController {
     }
 
 
-    @GetMapping
+    @GetMapping //Envia solo los productosdisponibles al cliente
     public ResponseEntity<List<ProductoDto>> listar() {
+        return ResponseEntity.ok(productoService.listarParaTienda());
+    }
+
+    @GetMapping("/admin-list") //Envia todo (disponible y no disponible) solo al admin
+    public ResponseEntity<List<ProductoDto>> listarParaAdmin() {
+
         return ResponseEntity.ok(productoService.listarActivos());
     }
 
-    // 🛠️ HU-004: PUT /api/products/{id} - Editar e inhabilitar disponibilidad
+    //HU-004: PUT Editar e inhabilitar disponibilidad
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoDto> actualizar(@PathVariable Long id, @Valid @RequestBody ProductoCreate dto) {
+    public ResponseEntity<ProductoDto> actualizar(@PathVariable Long id, @Valid @RequestBody ProductoEdit dto) {
         // Nota: Si en tu service el método se llama distinto (ej: editar), cambialo acá.
         return ResponseEntity.ok(productoService.actualizar(id, dto));
     }
 
-    // 🛠️ HU-005: DELETE /api/products/{id} - Baja o eliminación de producto
+    //HU-005: DELETE Baja o eliminación de producto
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         // Nota: Si en tu service se llama eliminarLogico o darDeBaja, adaptalo al nombre exacto.
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/shop") //GET para que el cliente no vea lo inactivo del lado admin
+    public ResponseEntity<List<ProductoDto>> listarParaTienda() {
+        return ResponseEntity.ok(productoService.listarParaTienda());
     }
 }

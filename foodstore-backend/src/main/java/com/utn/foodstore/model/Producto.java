@@ -40,5 +40,8 @@ public class Producto extends Base {
     @JoinColumn(name = "categoria_id", nullable = false) //Columna de la FK
     private Categoria categoria;
 
+    @Builder.Default
+    private boolean eliminado = false;
+
 
 }

@@ -10,9 +10,9 @@ export async function cargarGestionProductos() {
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Cargando inventario de productos y categorías...</div>`;
 
   try {
-    // ● Consumo paralelo exigido: GET /api/products y GET /api/categories
+    
     const [resProductos, resCategorias] = await Promise.all([
-      fetch('http://localhost:8080/api/products'),
+      fetch('http://localhost:8080/api/products/admin-list'),
       fetch('http://localhost:8080/api/categories')
     ]);
 
@@ -60,7 +60,6 @@ function renderizarPanelProductos(contenedor: HTMLElement) {
         </thead>
         <tbody>
           ${listaProductosGlobal.map(p => {
-            // Buscamos el nombre de la categoría cruzando los datos del vector de familias
             const catRef = listaCategoriasGlobal.find(c => c.id === p.categoriaId);
             const nombreCategoria = catRef ? catRef.nombre : "Sin asignar";
 
@@ -220,7 +219,7 @@ async function procesarGuardadoProductoBackend() {
   const imagen = (document.getElementById('form-prod-imagen') as HTMLInputElement).value.trim();
   const disponible = (document.getElementById('form-prod-disponible') as HTMLInputElement).checked;
 
-  // ○ Validaciones de la rúbrica: Campos requeridos y numéricos válidos
+  //validaciones de campos requeridos
   if (!esUrlValida(imagen)) {
     alert("⚠️ La URL de la imagen ingresada no es válida. Asegúrese de incluir http:// o https://");
     return;
@@ -236,7 +235,6 @@ async function procesarGuardadoProductoBackend() {
     return;
   }
 
-  // Estructura adaptada al esqueleto del DTO del Backend (ProductoCreate / ProductoEdit)
   const payload = {
     nombre,
     descripcion,
@@ -248,7 +246,6 @@ async function procesarGuardadoProductoBackend() {
   };
 
   const esEdicion = idStr !== "";
-  // ○ POST /api/products (crear) o PUT /api/products/{id} (editar)
   const urlApi = esEdicion ? `http://localhost:8080/api/products/${idStr}` : 'http://localhost:8080/api/products';
   const metodoHttp = esEdicion ? 'PUT' : 'POST';
 
@@ -264,7 +261,7 @@ async function procesarGuardadoProductoBackend() {
       const modal = document.getElementById('modal-abm-producto');
       if (modal) modal.style.display = 'none';
 
-      cargarGestionProductos(); // Recarga reactiva
+      cargarGestionProductos(); 
     } else {
       const errorTxt = await respuesta.text();
       alert(`⚠️ No se pudo procesar la solicitud: ${errorTxt}`);
@@ -276,18 +273,16 @@ async function procesarGuardadoProductoBackend() {
 }
 
 async function procesarEliminacionProductoBackend(id: number, nombre: string) {
-  // ○ Confirmación al eliminar (DELETE /api/products/{id}) requerida
+  // confirmación al eliminar
   const confirmar = confirm(`¿Está seguro de que desea dar de baja el producto "${nombre}"?`);
   if (!confirmar) return;
 
   try {
-    const respuesta = await fetch(`http://localhost:8080/api/products/${id}`, {
-      method: 'DELETE'
-    });
+    const respuesta = await fetch(`http://localhost:8080/api/products/${id}`, {method: 'DELETE'});
 
     if (respuesta.ok) {
       alert("🗑️ El plato ha sido dado de baja de manera exitosa.");
-      cargarGestionProductos(); // Recarga reactiva
+      cargarGestionProductos(); 
     } else {
       const errorTxt = await respuesta.text();
       alert(`⚠️ No se pudo dar de baja el artículo: ${errorTxt}`);

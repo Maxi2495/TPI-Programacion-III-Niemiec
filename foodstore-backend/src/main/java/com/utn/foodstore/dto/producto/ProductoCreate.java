@@ -29,7 +29,7 @@ public class ProductoCreate {
     @NotNull(message = "El ID de categoría es obligatorio")
     private Long categoriaId;
 
-    // ➕ LOS DOS CAMPOS NUEVOS: Ahora el DTO sí puede transportar esta data
+
     private String imagen;
     private Boolean disponible;
 }

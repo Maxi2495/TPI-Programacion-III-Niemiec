@@ -12,4 +12,7 @@ public class PedidoCreate {
 
     @NotEmpty(message = "El pedido debe contener al menos un producto")
     private List<DetallePedidoDto> detalles;
+
+    @NotNull(message = "La forma de pago es obligatoria")
+    private String formaPago;
 }

@@ -33,7 +33,7 @@ public class PedidoService {
         this.productoRepository = productoRepository;
     }
 
-    // HU-016: Crear Pedido (Transaccional)
+    // HU-016: Crear Pedido
     @Transactional //Esto me permite que ante cualquier error --> Rollback
     public PedidoDto crear(PedidoCreate dto) {
         //alidar al usuario
@@ -45,8 +45,13 @@ public class PedidoService {
 
         //Iteracion del carrito para armar los detalles y descontar stock
         for (DetallePedidoDto item : dto.getDetalles()) {
+
             Producto productoDB = productoRepository.findByIdAndEliminadoFalse(item.getProductoId())
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con ID: " + item.getProductoId()));
+
+            if (productoDB.getDisponible() == null || !productoDB.getDisponible()) {
+                throw new RuntimeException("El producto '" + productoDB.getNombre() + "' no está disponible para la venta");
+            }
 
             //Control de Stock
             if (productoDB.getStock() < item.getCantidad()) {
@@ -75,7 +80,7 @@ public class PedidoService {
                 .detalles(detallesReales)
                 .estado(EstadoPedido.PENDIENTE)
                 //por defecto efvo
-                .formaPago(com.utn.foodstore.model.enums.FormaPago.EFECTIVO)
+                .formaPago(com.utn.foodstore.model.enums.FormaPago.valueOf(dto.getFormaPago().toUpperCase()))
                 .build();
 
         //Calculo del total
@@ -115,21 +120,21 @@ public class PedidoService {
 
         return pedidoRepository.findAll().stream()
                 .map(pedido -> {
-                    // 1. Convertimos la colección de detalles de Hibernate a una lista limpia de textos para la web
+
                     java.util.List<String> prodsMapeados = pedido.getDetalles().stream()
                             .map(detalle -> detalle.getCantidad() + "x " + detalle.getProducto().getNombre())
                             .collect(java.util.stream.Collectors.toList());
 
-                    // 2. Formateamos el timestamp de auditoría del pedido
+                    //formato del tiempo
                     String fechaHoraStr = pedido.getCreatedAt() != null ? pedido.getCreatedAt().format(formateador) : "Fecha no disponible";
 
-                    // 3. Ensamblamos el DTO expandido
+                    //armado del dto
                     return PedidoDto.builder()
                             .id(pedido.getId())
                             .clienteNombre(pedido.getUsuario() != null ? pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido() : "Consumidor Final")                            .total(pedido.getTotal())
                             .estado(pedido.getEstado().toString())
-                            .fechaHora(fechaHoraStr) // 👈 Seteamos la fecha y hora real del servidor
-                            .productosDetalle(prodsMapeados) // 👈 Seteamos los productos reales comprados
+                            .fechaHora(fechaHoraStr)
+                            .productosDetalle(prodsMapeados)
                             .build();
                 })
                 .collect(java.util.stream.Collectors.toList());
@@ -138,25 +143,86 @@ public class PedidoService {
 
     @Transactional
     public PedidoDto cambiarEstado(Long id, String nuevoEstado) {
-        // 1. Buscamos el pedido en la base de datos usando tu repositorio de Spring Data JPA
+
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
 
-        // 2. Convertimos el String que viene de la web al ENUM exacto de tus imports (EstadoPedido)
+
         EstadoPedido estadoEnum = EstadoPedido.valueOf(nuevoEstado.toUpperCase());
 
-        // 3. Modificamos el estado en el objeto
+
         pedido.setEstado(estadoEnum);
 
-        // 4. Persistimos el cambio (Hibernate se encarga de generar el UPDATE en H2)
+
         Pedido pedidoActualizado = pedidoRepository.save(pedido);
 
-        // 5. Devolvemos el DTO ensamblado con el Builder para que viaje limpio hacia TypeScript
+
         return PedidoDto.builder()
                 .id(pedidoActualizado.getId())
                 .clienteNombre(pedidoActualizado.getUsuario() != null ? pedidoActualizado.getUsuario().getNombre() + " " + pedidoActualizado.getUsuario().getApellido() : "Consumidor Final")                .total(pedidoActualizado.getTotal())
                 .estado(pedidoActualizado.getEstado().name())
                 .build();
+    }
+
+    // HU-018: Buscar pedido por su identificador único (ID)
+    public PedidoDto buscarPorId(Long id) {
+        java.time.format.DateTimeFormatter formateador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
+
+        java.util.List<String> prodsMapeados = pedido.getDetalles().stream()
+                .map(detalle -> detalle.getCantidad() + "x " + detalle.getProducto().getNombre())
+                .collect(java.util.stream.Collectors.toList());
+
+        String fechaHoraStr = pedido.getCreatedAt() != null ? pedido.getCreatedAt().format(formateador) : "Fecha no disponible";
+
+        return PedidoDto.builder()
+                .id(pedido.getId())
+                .clienteNombre(pedido.getUsuario() != null ? pedido.getUsuario().getNombre() + " " + pedido.getUsuario().getApellido() : "Consumidor Final")
+                .total(pedido.getTotal())
+                .estado(pedido.getEstado().toString())
+                .fechaHora(fechaHoraStr)
+                .productosDetalle(prodsMapeados)
+                .build();
+    }
+
+    //buscar historial por Usuario ID
+    public java.util.List<PedidoDto> obtenerHistorialUsuario(Long usuarioId) {
+        return pedidoRepository.findByUsuarioIdAndEliminadoFalse(usuarioId).stream()
+                .map(pedido -> PedidoDto.builder()
+                        .id(pedido.getId())
+                        .total(pedido.getTotal())
+                        .estado(pedido.getEstado().name())
+                        .build())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    //Modificacion PUT
+    @Transactional
+    public PedidoDto actualizarFormal(Long id, com.utn.foodstore.dto.pedido.PedidoEdit dto) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
+
+        dto.applyTo(pedido); // Aplicamos los cambios del DTO
+
+        Pedido guardado = pedidoRepository.save(pedido);
+        return PedidoDto.builder()
+                .id(guardado.getId())
+                .clienteNombre(guardado.getUsuario() != null ? guardado.getUsuario().getNombre() + " " + guardado.getUsuario().getApellido() : "Consumidor Final")
+                .total(guardado.getTotal())
+                .estado(guardado.getEstado().name())
+                .build();
+    }
+
+    //Baja logica
+    @Transactional
+    public void eliminarPedido(Long id) {
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
+
+        pedido.setEliminado(true);
+        pedidoRepository.save(pedido);
     }
 
 }//Fin de clase

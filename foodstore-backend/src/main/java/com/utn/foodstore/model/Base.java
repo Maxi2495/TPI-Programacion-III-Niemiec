@@ -11,7 +11,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@MappedSuperclass // PAra que las clases hijas hereden todo de base
+@MappedSuperclass // PAra que las clases hijas hereden rodo de base
 @Getter
 @Setter // Lombok de los setters y getters
 @NoArgsConstructor

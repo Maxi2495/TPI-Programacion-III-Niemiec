@@ -45,6 +45,9 @@ public class Usuario extends Base {
     @Builder.Default
     private Set<Pedido> pedidos = new HashSet<>();
 
+    @Builder.Default
+    private boolean eliminado = false;
+
     public void addPedido(Pedido pedido) {
         pedidos.add(pedido);
     }

@@ -14,5 +14,5 @@ public class ProductoDto {
     private String imagen;
     private Boolean disponible;
     private Long categoriaId;
-    private String categoriaNombre; // Evita bucles infinitos en el JSON
+    private String categoriaNombre; //categoria anidada
 }

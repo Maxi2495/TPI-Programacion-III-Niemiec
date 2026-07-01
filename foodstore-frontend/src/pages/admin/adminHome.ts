@@ -2,6 +2,7 @@ import { usuarioLogueado } from '../../main.ts';
 import { cargarGestionProductos } from './products/products.ts';
 import { cargarGestionPedidosAdmin } from './orders.ts';
 import { cargarGestionCategorias } from './categories/categories.ts';
+import { cargarGestionUsuarios } from './users.ts';
 
 export async function cargarAdminDashboard() {
   const contenedor = document.getElementById('contenido-pagina');
@@ -121,6 +122,9 @@ export async function cargarAdminDashboard() {
             <button id="btn-link-modulo-pedidos" class="btn-admin" style="background-color: #17a2b8;">
               📋 Monitor de Auditoría Global de Pedidos
             </button>
+            <button id="btn-link-modulo-usuarios" class="btn-admin" style="background-color: #dc3545;">
+              👥 Auditoría de Usuarios
+            </button>
           </div>
         </div>
 
@@ -146,4 +150,8 @@ function configurarEventosDashboardEnlaces() {
   document.getElementById('btn-link-modulo-categorias')?.addEventListener('click', () => {
     cargarGestionCategorias();
   });
+
+  document.getElementById('btn-link-modulo-usuarios')?.addEventListener('click', () => {
+  cargarGestionUsuarios();
+});
 }

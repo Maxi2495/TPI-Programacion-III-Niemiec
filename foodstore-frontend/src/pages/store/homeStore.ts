@@ -18,7 +18,7 @@ export async function cargarHomeStore() {
   try {
     // 1. Consumo paralelo de los endpoints exigidos por la rúbrica
     const [resProductos, resCategorias] = await Promise.all([
-      fetch('http://localhost:8080/api/products'),
+      fetch('http://localhost:8080/api/products/shop'),
       fetch('http://localhost:8080/api/categories')
     ]);
 
