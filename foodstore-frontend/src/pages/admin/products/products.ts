@@ -143,12 +143,12 @@ function renderizarPanelProductos(contenedor: HTMLElement) {
 function configurarEventosPanelProductos() {
   document.getElementById('btn-prod-volver-dash')?.addEventListener('click', cargarAdminDashboard);
 
-  // Botón Alta
+  //boton alta
   document.getElementById('btn-nuevo-producto')?.addEventListener('click', () => {
     abrirModalFormularioProducto();
   });
 
-  // Botones de Fila
+  //botones fila
   listaProductosGlobal.forEach(p => {
     document.getElementById(`btn-editar-prod-${p.id}`)?.addEventListener('click', () => {
       abrirModalFormularioProducto(p);
@@ -159,7 +159,7 @@ function configurarEventosPanelProductos() {
     });
   });
 
-  // Cerrar Modal
+  //cerrar amodal
   document.getElementById('btn-cerrar-modal-prod')?.addEventListener('click', () => {
     const modal = document.getElementById('modal-abm-producto');
     if (modal) modal.style.display = 'none';
@@ -219,19 +219,19 @@ async function procesarGuardadoProductoBackend() {
   const imagen = (document.getElementById('form-prod-imagen') as HTMLInputElement).value.trim();
   const disponible = (document.getElementById('form-prod-disponible') as HTMLInputElement).checked;
 
-  //validaciones de campos requeridos
+  //validaciones pedidas
   if (!esUrlValida(imagen)) {
-    alert("⚠️ La URL de la imagen ingresada no es válida. Asegúrese de incluir http:// o https://");
+    alert("La URL de la imagen ingresada no es válida. Incluir http:// o https://");
     return;
   }
 
   if (precio <= 0) {
-    alert("⚠️ Validación de Negocio: El precio del plato debe ser mayor a cero.");
+    alert("El precio del plato debe ser mayor a cero.");
     return;
   }
 
   if (stock < 0) {
-    alert("⚠️ Validación de Negocio: El stock disponible en cocina no puede ser un número negativo.");
+    alert("El stock disponible en cocina no puede ser un número negativo.");
     return;
   }
 
@@ -257,18 +257,18 @@ async function procesarGuardadoProductoBackend() {
     });
 
     if (respuesta.ok) {
-      alert(esEdicion ? "🎉 El plato ha sido actualizado correctamente." : "🎉 Nuevo plato incorporado con éxito al catálogo.");
+      alert(esEdicion ? "El plato ha sido actualizado correctamente." : "Nuevo plato incorporado con éxito al catálogo.");
       const modal = document.getElementById('modal-abm-producto');
       if (modal) modal.style.display = 'none';
 
       cargarGestionProductos(); 
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ No se pudo procesar la solicitud: ${errorTxt}`);
+      alert(`No se pudo procesar la solicitud: ${errorTxt}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar registrar los cambios en la base de datos.");
+    alert("Error de red al intentar registrar los cambios en la base de datos.");
   }
 }
 
@@ -281,14 +281,14 @@ async function procesarEliminacionProductoBackend(id: number, nombre: string) {
     const respuesta = await fetch(`http://localhost:8080/api/products/${id}`, {method: 'DELETE'});
 
     if (respuesta.ok) {
-      alert("🗑️ El plato ha sido dado de baja de manera exitosa.");
+      alert("El plato ha sido dado de baja de manera exitosa.");
       cargarGestionProductos(); 
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ No se pudo dar de baja el artículo: ${errorTxt}`);
+      alert(`No se pudo dar de baja el artículo: ${errorTxt}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al conectar con el servicio de eliminación.");
+    alert("Error de red al conectar con el servicio de eliminación.");
   }
 }

@@ -9,7 +9,7 @@ export async function cargarGestionCategorias() {
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Actualizando panel de categorías...</div>`;
 
   try {
-    // ● GET /api/categories exigido por la cátedra
+    //GEt categories
     const respuesta = await fetch('http://localhost:8080/api/categories');
     listaCategoriasGlobal = await respuesta.json();
 
@@ -98,12 +98,10 @@ function renderizarPanelCategorias(contenedor: HTMLElement) {
 function configurarEventosPanelCategorias() {
   document.getElementById('btn-cat-volver-dash')?.addEventListener('click', cargarAdminDashboard);
 
-  // Apertura de formulario de creación
   document.getElementById('btn-nueva-categoria')?.addEventListener('click', () => {
     abrirModalFormulario();
   });
 
-  // Enganche de botones de edición y eliminación por cada fila
   listaCategoriasGlobal.forEach(cat => {
     document.getElementById(`btn-editar-cat-${cat.id}`)?.addEventListener('click', () => {
       abrirModalFormulario(cat);
@@ -114,7 +112,6 @@ function configurarEventosPanelCategorias() {
     });
   });
 
-  // Cerrar el modal formulario
   document.getElementById('btn-cerrar-modal-cat')?.addEventListener('click', () => {
     const modal = document.getElementById('modal-abm-categoria');
     if (modal) modal.style.display = 'none';
@@ -131,21 +128,18 @@ function abrirModalFormulario(categoria?: any) {
   form.reset();
 
   if (categoria) {
-    // Si pasamos un objeto, es una edición de registro
-    titulo.innerText = `✏️ Modificar Categoría (# ${categoria.id})`;
+    titulo.innerText = `Modificar Categoría (# ${categoria.id})`;
     (document.getElementById('form-cat-id') as HTMLInputElement).value = categoria.id;
     (document.getElementById('form-cat-nombre') as HTMLInputElement).value = categoria.nombre;
     (document.getElementById('form-cat-descripcion') as HTMLInputElement).value = categoria.descripcion;
     (document.getElementById('form-cat-imagen') as HTMLInputElement).value = categoria.imagen;
   } else {
-    // Si viene vacío, es un registro nuevo
-    titulo.innerText = `➕ Registrar Nueva Categoría`;
+    titulo.innerText = `Registrar Nueva Categoría`;
     (document.getElementById('form-cat-id') as HTMLInputElement).value = "";
   }
 
   modal.style.display = 'block';
   
-  // Desenganchamos listeners viejos del submit para que no se dupliquen
   form.onsubmit = null;
   form.onsubmit = (e) => {
     e.preventDefault();
@@ -154,7 +148,6 @@ function abrirModalFormulario(categoria?: any) {
 }
 
 function esUrlValida(texto: string): boolean {
-  // ● Validación: URL válida para imagen exigida por la rúbrica
   try {
     new URL(texto);
     return true;
@@ -169,16 +162,14 @@ async function procesarGuardadoBackend() {
   const descripcion = (document.getElementById('form-cat-descripcion') as HTMLInputElement).value.trim();
   const imagen = (document.getElementById('form-cat-imagen') as HTMLInputElement).value.trim();
 
-  // Ejecutamos la validación de formato de URL exigida
   if (!esUrlValida(imagen)) {
-    alert("⚠️ La dirección de la imagen ingresada no es válida. Verifique que comience con http:// o https://");
+    alert("La dirección de la imagen ingresada no es válida. Verifique que comience con http:// o https://");
     return;
   }
 
   const payload = { nombre, descripcion, imagen };
   const esEdicion = idStr !== "";
 
-  // Selección dinámica de endpoints y verbos según rúbrica (POST para crear, PUT para editar)
   const urlApi = esEdicion ? `http://localhost:8080/api/categories/${idStr}` : 'http://localhost:8080/api/categories';
   const metodoHttp = esEdicion ? 'PUT' : 'POST';
 
@@ -194,37 +185,37 @@ async function procesarGuardadoBackend() {
       const modal = document.getElementById('modal-abm-categoria');
       if (modal) modal.style.display = 'none';
       
-      cargarGestionCategorias(); // Recarga reactiva de la grilla
+      cargarGestionCategorias(); 
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ No se pudo guardar la información: ${errorTxt || 'Verifique los datos.'}`);
+      alert(`No se pudo guardar la información: ${errorTxt || 'Verifique los datos.'}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar comunicarse con el servidor.");
+    alert("Error de red al intentar comunicarse con el servidor.");
   }
 }
 
 async function procesarEliminacionBackend(id: number, nombre: string) {
-  // ● Confirmación antes de ejecutar la acción DELETE requerida por la cátedra
+  //pregunta antes de borrar
   const confirmar = confirm(`¿Está seguro de que desea eliminar la categoría "${nombre}"? Esta acción podría ocultar sus productos asociados.`);
   if (!confirmar) return;
 
   try {
-    // DELETE /api/categories/{id}
+    
     const respuesta = await fetch(`http://localhost:8080/api/categories/${id}`, {
       method: 'DELETE'
     });
 
     if (respuesta.ok) {
-      alert("🗑️ Categoría dada de baja de manera correcta.");
-      cargarGestionCategorias(); // Recarga reactiva
+      alert("Categoría dada de baja de manera correcta.");
+      cargarGestionCategorias(); 
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ No se pudo eliminar la categoría seleccionada: ${errorTxt}`);
+      alert(`No se pudo eliminar la categoría seleccionada: ${errorTxt}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar eliminar el registro.");
+    alert("Error de red al intentar eliminar el registro.");
   }
 }

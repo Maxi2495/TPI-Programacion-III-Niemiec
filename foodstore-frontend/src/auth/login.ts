@@ -4,7 +4,7 @@ export async function cargarPantallaLogin() {
   const app = document.querySelector<HTMLDivElement>('#app');
   if (!app) return;
 
-  // Dibujamos el formulario estructural y el enlace de registro ordenado
+  // formulario login
   app.innerHTML = `
     <div class="auth-container">
       <h2>🔐 Iniciar Sesión - Food Store</h2>
@@ -33,12 +33,11 @@ export async function cargarPantallaLogin() {
     </div>
   `;
 
-  // 🛠️ CORREGIDO: Ambos listeners se cuelgan acá adentro, inmediatamente después de inyectar el HTML en el DOM
+  
   document.getElementById('form-login-real')?.addEventListener('submit', procesarAutenticacionBackend);
 
   document.getElementById('link-ir-al-registro')?.addEventListener('click', (e) => {
     e.preventDefault();
-    // Importamos dinámicamente el componente de registro para respetar la separación de módulos
     import('./register.ts').then(modulo => modulo.cargarPantallaRegistro());
   });
 }
@@ -72,14 +71,14 @@ async function procesarAutenticacionBackend(e: Event) {
 
       localStorage.setItem('usuario_sesion', JSON.stringify(sesionFormateada));
       
-      alert(`🎉 ¡Bienvenido/a, ${sesionFormateada.nombre}!`);
+      alert(`¡Bienvenido/a, ${sesionFormateada.nombre}!`);
       renderizarApp();
     } else {
       const errorMsg = await respuesta.text();
-      alert(`❌ Error de autenticación: ${errorMsg || 'Credenciales inválidas.'}`);
+      alert(`Error de autenticación: ${errorMsg || 'Credenciales inválidas.'}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar conectar.");
+    alert("Error de red al intentar conectar.");
   }
 }

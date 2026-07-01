@@ -7,17 +7,16 @@ export async function cargarHistorialPedidosCliente() {
   const contenedor = document.getElementById('contenido-pagina');
   if (!contenedor) return;
 
-  contenedor.innerHTML = `<div style="padding: 20px;">⏳ Sincronizando tu historial de pedidos...</div>`;
+  contenedor.innerHTML = `<div style="padding: 20px;">⏳ Sincronizando historial de pedidos...</div>`;
 
   try {
-    // ● Conexión con el API REST exigido por la cátedra
+    
     const respuesta = await fetch('http://localhost:8080/api/orders');
     const todosLosPedidos = await respuesta.json();    
     if (!usuarioLogueado) return;
     const usuarioActual = usuarioLogueado;
 
 
-    // ● Filtramos para mostrar únicamente los pedidos del usuario autenticado
     pedidosCliente = todosLosPedidos.filter((p: any) => p.clienteNombre === usuarioActual.nombre);
 
     renderizarInterfazHistorial(contenedor);
@@ -59,16 +58,14 @@ function renderizarInterfazHistorial(contenedor: HTMLElement) {
     if (estadoLimpio === 'TERMINADO') { claseBadge = "terminado"; textoVisual = "✅ Entregado"; }
     if (estadoLimpio === 'CANCELADO') { claseBadge = "pendiente"; textoVisual = "❌ Cancelado"; }
 
-    // 🔥 ALGORITMO EXIGIDO: "Resumen de productos (primeros 3 + contador)"
+    //productos primeros 3 + contador
     const listaProductos = pedido.productosDetalle || [];
     let resumenTexto = "";
     
     if (listaProductos.length === 0) {
       resumenTexto = "Sin productos";
     } else {
-      // Tomamos los primeros 3 productos de la lista
       resumenTexto = listaProductos.slice(0, 3).join(', ');
-      // Si compró más de 3 variedades, le acoplamos el contador de excedentes
       if (listaProductos.length > 3) {
         resumenTexto += ` y +${listaProductos.length - 3} ítems más`;
       }
@@ -112,14 +109,12 @@ function renderizarInterfazHistorial(contenedor: HTMLElement) {
 }
 
 function configurarEventosHistorial() {
-  // Enganchamos el clic a cada tarjeta para abrir el modal detallado
   pedidosCliente.forEach(pedido => {
     document.getElementById(`card-pedido-cliente-${pedido.id}`)?.addEventListener('click', () => {
       abrirModalDetallePedido(pedido);
     });
   });
 
-  // Cerrar modal
   document.getElementById('btn-cerrar-modal-pedido-cliente')?.addEventListener('click', () => {
     const modal = document.getElementById('modal-detalle-pedido-cliente');
     if (modal) modal.style.display = 'none';

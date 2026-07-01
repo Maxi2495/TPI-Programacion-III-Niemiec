@@ -8,11 +8,11 @@ export async function cargarAdminDashboard() {
   const contenedor = document.getElementById('contenido-pagina');
   if (!contenedor) return;
 
-  // 🛡️ VALIDACIÓN DE SESIÓN Y ROL
+  //valida el rol
   if (!usuarioLogueado || usuarioLogueado.rol !== 'ADMIN') {
     contenedor.innerHTML = `
       <div class="auth-container" style="max-width: 500px; padding: 30px;">
-        <h2 style="color:#dc3545;">⛔ Acceso Denegado</h2>
+        <h2 style="color:#dc3545;">Acceso Denegado</h2>
         <p style="color:#6c757d;">No cuenta con permisos de administrador para inspeccionar esta sección protegida.</p>
       </div>
     `;
@@ -32,25 +32,24 @@ export async function cargarAdminDashboard() {
     const categorias: any[] = await resCategorias.json();
     const pedidos: any[] = await resPedidos.json();
 
-    // 📊 1. PROCESAMIENTO OPERATIVO DE CATEGORÍAS
+    //categorias
     const totalCategorias = categorias.length;
-    // Filtro para las categorias activas
+    //filtro activas
     const categoriasActivas = categorias.filter(c => c.eliminado !== true).length;
     const categoriasInactivas = totalCategorias - categoriasActivas;
 
-    // 📦 2. PROCESAMIENTO OPERATIVO DE PRODUCTOS
+    //productos
     const totalProductos = productos.length;
     const productosDisponibles = productos.filter(p => p.stock > 0).length;
     const productosSinStock = totalProductos - productosDisponibles;
 
-    // 📋 3. CONTEO ESTRICTO DE PEDIDOS POR ESTADO
+    //estado de los pedidos
     const totalPedidos = pedidos.length; 
     const pedidosPendientes = pedidos.filter(p => p.estado.toUpperCase() === 'PENDIENTE').length;
     const pedidosConfirmados = pedidos.filter(p => p.estado.toUpperCase() === 'CONFIRMADO').length;
     const pedidosTerminados = pedidos.filter(p => p.estado.toUpperCase() === 'TERMINADO').length;
     const pedidosCancelados = pedidos.filter(p => p.estado.toUpperCase() === 'CANCELADO').length;
 
-    // Renderizado estructural del Dashboard
     contenedor.innerHTML = `
       <div class="admin-dashboard-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">

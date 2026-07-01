@@ -4,7 +4,6 @@ export function cargarDetalleProducto(producto: any) {
   const contenedor = document.getElementById('contenido-pagina');
   if (!contenedor) return;
 
-  // Renderizamos la estructura de Detalle Extendido usando las clases de tu CSS unificado
   contenedor.innerHTML = `
     <div class="admin-dashboard-container" style="max-width: 900px;">
       
@@ -31,7 +30,7 @@ export function cargarDetalleProducto(producto: any) {
                 <span class="detalle-precio">$ ${producto.precio}</span>
                 
                 <span class="badge-estado ${producto.stock > 0 ? 'terminado' : 'pendiente'}">
-                  ${producto.stock > 0 ? `🔥 ¡Disponible! (${producto.stock} u.)` : '❌ Agotado temporalmente'}
+                  ${producto.stock > 0 ? `Disponible! (${producto.stock} u.)` : 'Agotado temporalmente'}
                 </span>
               </div>
 
@@ -55,7 +54,6 @@ export function cargarDetalleProducto(producto: any) {
     </div>
   `;
 
-  // Enganchamos los listeners del componente
   document.getElementById('btn-volver-catalogo')?.addEventListener('click', cargarHomeStore);
   document.getElementById('btn-agregar-al-carrito-real')?.addEventListener('click', () => {
     procesarInsercionAlCarrito(producto);
@@ -63,7 +61,6 @@ export function cargarDetalleProducto(producto: any) {
 }
 
 function CollegeBadgeCounterActualizar() {
-  // Función auxiliar para actualizar el numerito rojo flotante del navbar superior instantáneamente
   const carrito = JSON.parse(localStorage.getItem('carrito_foodstore') || '[]');
   const total = carrito.reduce((acc: number, item: any) => acc + item.cantidad, 0);
   const badge = document.getElementById('badge-contador-carrito');
@@ -74,19 +71,17 @@ function procesarInsercionAlCarrito(producto: any) {
   const inputCant = document.getElementById('input-cantidad-detalle') as HTMLInputElement;
   const cantidadAAgregar = Number(inputCant.value);
 
-  // Validación rápida en el cliente
   if (cantidadAAgregar <= 0 || cantidadAAgregar > producto.stock) {
     alert("❌ Cantidad seleccionada inválida o supera el stock disponible en cocina.");
     return;
   }
 
-  // ● Sistema de carrito: Funcional con persistencia estricta en localStorage
+  //carrito
   const carritoActual = JSON.parse(localStorage.getItem('carrito_foodstore') || '[]');
 
   const existeIndex = carritoActual.findIndex((item: any) => item.productoId === producto.id);
 
   if (existeIndex !== -1) {
-    // Si ya existía el plato en la bolsa, controlamos que la suma no quiebre el stock total
     const nuevaCantidadTotal = carritoActual[existeIndex].cantidad + cantidadAAgregar;
     if (nuevaCantidadTotal > producto.stock) {
       alert(`⚠️ No podés agregar más unidades. Ya tenés ${carritoActual[existeIndex].cantidad} en el carrito y el stock máximo es de ${producto.stock}.`);
@@ -94,7 +89,6 @@ function procesarInsercionAlCarrito(producto: any) {
     }
     carritoActual[existeIndex].cantidad = nuevaCantidadTotal;
   } else {
-    // Si es un producto nuevo en el carrito, lo insertamos con la estructura limpia
     carritoActual.push({
       productoId: producto.id,
       nombre: producto.nombre,
@@ -103,10 +97,9 @@ function procesarInsercionAlCarrito(producto: any) {
     });
   }
 
-  // Guardamos en el disco de la compu
+  //periste en local storage
   localStorage.setItem('carrito_foodstore', JSON.stringify(carritoActual));
   
-  // Actualizamos visualmente el badge del botón amarillo superior sin refrescar
   CollegeBadgeCounterActualizar();
 
   alert(`🎉 ¡Agregado! Sumaste ${cantidadAAgregar} "${producto.nombre}" a tu orden.`);

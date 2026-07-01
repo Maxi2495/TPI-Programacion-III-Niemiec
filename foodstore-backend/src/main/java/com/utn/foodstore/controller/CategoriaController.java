@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController //Atiende peticiones de internet
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/api/categories") // La URL donde atiende
+@RequestMapping("/api/categories") //La URL donde atiende
 public class CategoriaController {
 
     private final CategoriaService categoriaService;

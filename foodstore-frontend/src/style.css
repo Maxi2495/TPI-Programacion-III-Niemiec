@@ -1,6 +1,4 @@
-/* ==========================================================================
-   1. ESTILOS GLOBALES Y RESETS
-   ========================================================================== */
+/* estilo global  */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
@@ -9,9 +7,7 @@ body {
   color: #333;
 }
 
-/* ==========================================================================
-   2. CAPA DE NAVEGACIÓN GLOBAL Y COMPONENTES COMUNES
-   ========================================================================== */
+/* navegacion y componentes */
 .navbar-global {
   background-color: #212529;
   color: white;
@@ -43,9 +39,7 @@ body {
   background-color: #5a6268;
 }
 
-/* ==========================================================================
-   3. MÓDULO DE AUTENTICACIÓN (LOGIN / REGISTRO)
-   ========================================================================== */
+/* login */
 .auth-container {
   background: white;
   padding: 40px;
@@ -69,9 +63,7 @@ body {
   color: #495057;
 }
 
-/* ==========================================================================
-   4. MÓDULO CLIENTE: STORE FRONT (CATÁLOGO Y FILTROS)
-   ========================================================================== */
+/* cliente */
 .store-topbar {
   display: flex;
   justify-content: space-between;
@@ -134,7 +126,7 @@ body {
   font-weight: bold;
 }
 
-/* Grilla del catálogo reactivo */
+/* catalogo */
 .productos-grid-layout {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -170,9 +162,7 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* ==========================================================================
-   5. MÓDULO ADMINISTRADOR: DASHBOARD Y CONTROLES
-   ========================================================================== */
+/* admin */
 .admin-dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -256,9 +246,7 @@ body {
 
 .btn-admin:hover { background-color: #138496; }
 
-/* ==========================================================================
-   6. TABLAS DE CONSULTA Y MONITOR (ABMS Y PEDIDOS)
-   ========================================================================== */
+/* consulta admin */
 .tabla-pedidos {
   width: 100%;
   border-collapse: collapse;
@@ -284,7 +272,7 @@ body {
 
 .tabla-pedidos tr:hover { background-color: #f8f9fa; }
 
-/* Componentes de Acción Comunes */
+/* botoneras */
 .btn-confirmar {
   background-color: #28a745;
   color: white;
@@ -300,7 +288,7 @@ body {
 .btn-confirmar:hover:not(:disabled) { background-color: #218838; }
 .btn-confirmar:disabled { background-color: #6c757d; cursor: not-allowed; }
 
-/* Badges de Estados */
+/* estados */
 .badge-estado {
   padding: 5px 10px;
   border-radius: 4px;
@@ -312,9 +300,7 @@ body {
 .badge-estado.confirmado { background-color: #b8daff; color: #004085; }
 .badge-estado.terminado { background-color: #c3e6cb; color: #155724; }
 
-/* ==========================================================================
-   7. MODALES GENÉRICOS (DETALLES Y FORMULARIOS DE ALTA)
-   ========================================================================== */
+/* detalles, formularios */
 .modal {
   display: none; 
   position: fixed; 

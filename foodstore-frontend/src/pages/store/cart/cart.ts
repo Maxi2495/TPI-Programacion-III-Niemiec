@@ -2,7 +2,7 @@ import { cargarHomeStore } from '../homeStore.ts';
 import { usuarioLogueado } from '../../../main.ts';
 
 let carritoLocal: any[] = [];
-let productosFresh: any[] = []; // Para validar stock e imágenes en tiempo real
+let productosFresh: any[] = []; 
 
 export async function cargarCarritoStore() {
   const contenedor = document.getElementById('contenido-pagina');
@@ -25,7 +25,7 @@ export async function cargarCarritoStore() {
 }
 
 function renderizarInterfazCarrito(contenedor: HTMLElement) {
-  // Empieza vacío con mensaje y botón a la tienda  (requisito)
+  //carrito arranca vacio
   if (carritoLocal.length === 0) {
     contenedor.innerHTML = `
       <div class="auth-container" style="max-width: 500px; padding: 40px;">
@@ -114,12 +114,12 @@ function renderizarInterfazCarrito(contenedor: HTMLElement) {
             <input type="text" id="checkout-telefono" class="select-pago" required placeholder="Ej: 3513445566">
             
             <button type="submit" class="btn-confirmar" style="width: 100%; margin-top: 10px;">
-              🚀 Confirmar Pedido
+              Confirmar Pedido
             </button>
           </form>
 
           <button id="btn-checkout-seguir-comprando" class="btn-sesion" style="width: 100%; margin-top: 10px; background-color:#6c757d;">
-            🍕 Seguir Comprando
+            Seguir Comprando
           </button>
         </div>
 
@@ -137,7 +137,7 @@ function configurarEventosInterfazCarrito() {
     const prodRef = productosFresh.find(p => p.id === item.productoId);
     const stockMaximo = prodRef ? prodRef.stock : 99;
 
-    // Control de Restar
+    //control de restar
     document.getElementById(`btn-restar-${item.productoId}`)?.addEventListener('click', () => {
       if (item.cantidad > 1) {
         item.cantidad--;
@@ -147,7 +147,7 @@ function configurarEventosInterfazCarrito() {
       guardarYRefrescarCarrito();
     });
 
-    // Control de Sumar
+    //control de sumar
     document.getElementById(`btn-sumar-${item.productoId}`)?.addEventListener('click', () => {
       if (item.cantidad < stockMaximo) {
         item.cantidad++;
@@ -157,23 +157,23 @@ function configurarEventosInterfazCarrito() {
       }
     });
 
-    // Control de Eliminar 
+    //control de eliminar 
     document.getElementById(`btn-eliminar-${item.productoId}`)?.addEventListener('click', () => {
       carritoLocal = carritoLocal.filter(i => i.productoId !== item.productoId);
       guardarYRefrescarCarrito();
     });
   });
 
-  // Vaciar Carrito
+  //vaciar Carrito
   document.getElementById('btn-vaciar-carrito-real')?.addEventListener('click', () => {
     carritoLocal = [];
     guardarYRefrescarCarrito();
   });
 
-  // Volver a la tienda
+  //volver a la tienda
   document.getElementById('btn-checkout-seguir-comprando')?.addEventListener('click', cargarHomeStore);
 
-  // Envio final de la orden de compra
+  //envio final de la orden de compra
   document.getElementById('form-checkout-carrito')?.addEventListener('submit', procesarCheckoutFinalBackend);
 }
 
@@ -186,7 +186,7 @@ async function procesarCheckoutFinalBackend(e: Event) {
   e.preventDefault();
 
   if (!usuarioLogueado) {
-    alert("❌ Error: Sesión inválida. Inicie sesión nuevamente.");
+    alert("Error: Sesión inválida. Inicie sesión nuevamente.");
     return;
   }
 
@@ -213,13 +213,13 @@ async function procesarCheckoutFinalBackend(e: Event) {
     });
 
     if (respuesta.ok) {      
-      alert(`🎉 ¡Pedido confirmado con éxito! Tu orden ya está ingresada en la cocina. Nos comunicaremos al número ${telefono} ante cualquier novedad.`);
+      alert(`¡Pedido confirmado con éxito! Tu orden ya está ingresada en la cocina. Nos comunicaremos al número ${telefono} ante cualquier novedad.`);
       
       localStorage.removeItem('carrito_foodstore');
       cargarHomeStore(); 
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar impactar la transacción POST.");
+    alert("Error de red al intentar impactar la transacción POST.");
   }
 }

@@ -91,22 +91,21 @@ async function ejecutarBajaLogica(id: number, nombreCompleto: string) {
   if (!confirmar) return;
 
   try {
-    // Disparamos el Escenario 1 de la rúbrica
     const respuesta = await fetch(`http://localhost:8080/api/users/${id}`, {
       method: 'DELETE'
     });
 
     if (respuesta.ok || respuesta.status === 204) {
-      alert("✅ Usuario dado de baja correctamente");
-      cargarGestionUsuarios(); // Recargamos la grilla
+      alert("Usuario dado de baja correctamente");
+      cargarGestionUsuarios(); 
     } else if (respuesta.status === 404) {
-      alert("❌ Escenario 2: El usuario no existe");
+      alert("Escenario 2: El usuario no existe");
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ Error inesperado: ${errorTxt}`);
+      alert(`Error inesperado: ${errorTxt}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar comunicarse con el servidor.");
+    alert("Error de red al intentar comunicarse con el servidor.");
   }
 }

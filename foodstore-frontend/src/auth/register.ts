@@ -42,7 +42,6 @@ export function cargarPantallaRegistro() {
     </div>
   `;
 
-  // Listener para volver al login si el usuario se arrepiente
   document.getElementById('link-ir-al-login')?.addEventListener('click', (e) => {
     e.preventDefault();
     cargarPantallaLogin();
@@ -60,7 +59,6 @@ async function procesarRegistroBackend(e: Event) {
   const celular = (document.getElementById('reg-celular') as HTMLInputElement).value;
   const contrasena = (document.getElementById('reg-password') as HTMLInputElement).value;
 
-  // Estructura estricta mapeada con tu DTO "UsuarioRegistro" en Java
   const nuevoUsuarioDto = {
     nombre,
     apellido,
@@ -70,7 +68,7 @@ async function procesarRegistroBackend(e: Event) {
   };
 
   try {
-    // ● Conexión con API POST /api/auth/register
+    //POST a register
     const respuesta = await fetch('http://localhost:8080/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -79,25 +77,25 @@ async function procesarRegistroBackend(e: Event) {
 
     if (respuesta.ok) {
       const usuarioCreado = await respuesta.json();
-      alert("🎉 ¡Registro exitoso en la base de datos H2!");
+      alert("¡Registro exitoso en la base de datos H2!");
 
-      // ● Auto-login después del registro (Requerimiento del PDF)
+      //Auto-login para despues del registro
       const sesionAutoLogin = {
         id: usuarioCreado.id,
         nombre: usuarioCreado.nombre + " " + usuarioCreado.apellido,
-        rol: usuarioCreado.rol // El backend le asignará automáticamente el rol 'USUARIO'
+        rol: usuarioCreado.rol 
       };
 
       localStorage.setItem('usuario_sesion', JSON.stringify(sesionAutoLogin));
       
-      // Redireccionamos directo a la tienda
+      
       renderizarApp();
     } else {
       const errorMsg = await respuesta.text();
-      alert(`❌ Error al registrar: ${errorMsg}`);
+      alert(`Error al registrar: ${errorMsg}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar registrar el usuario.");
+    alert("Error de red al intentar registrar el usuario.");
   }
 }

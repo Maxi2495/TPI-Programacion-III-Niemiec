@@ -7,7 +7,7 @@ import lombok.Data;
 @Data //getters y setters automáticos
 public class CategoriaCreate {
 
-    // Validaciones de Spring. El mensaje avisa el porque
+    // Validaciones. El mensaje avisa el porque
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String nombre;

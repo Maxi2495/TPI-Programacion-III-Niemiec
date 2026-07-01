@@ -10,23 +10,20 @@ interface UsuarioSesion {
   rol: 'USUARIO' | 'ADMIN';
 }
 
-// Arranca en null originalmente
+//arranca en null 
 export let usuarioLogueado: UsuarioSesion | null = null;
 
 export function renderizarApp() {
-  // 1. CORREGIDO: Cada vez que se renderice la app, actualizamos la variable leyendo el disco fresco
   usuarioLogueado = JSON.parse(localStorage.getItem('usuario_sesion') || 'null');
 
   const app = document.querySelector<HTMLDivElement>('#app');
   if (!app) return;
 
-  // Si no hay nadie logueado, delegamos al módulo auth y cortamos acá.
   if (!usuarioLogueado) {
     cargarPantallaLogin(); 
     return; 
   }
 
-  // Si hay sesión válida, inyectamos la Navbar estructural
   app.innerHTML = `
     <nav class="navbar-global">
       <div class="nav-info">

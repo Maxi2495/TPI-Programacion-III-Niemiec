@@ -10,11 +10,11 @@ export async function cargarGestionPedidosAdmin() {
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Recuperando el flujo global de órdenes...</div>`;
 
   try {
-    // ● GET /api/orders exigido por la cátedra
+    //GET de orders
     const respuesta = await fetch('http://localhost:8080/api/orders');
     const datosPedidos = await respuesta.json();
 
-    // ● FILTRO CRONOLÓGICO SEGURO: Forzamos más recientes primero (ID descendente)
+    //orden cronologico
     listaPedidosGlobal = datosPedidos.sort((a: any, b: any) => Number(b.id) - Number(a.id));
 
     renderizarPanelPedidosAdmin(contenedor);
@@ -25,7 +25,6 @@ export async function cargarGestionPedidosAdmin() {
 }
 
 function renderizarPanelPedidosAdmin(contenedor: HTMLElement) {
-  // Aplicamos el filtro selectivo por estado
   const pedidosFiltrados = listaPedidosGlobal.filter(p => {
     if (filtroEstadoActual === 'TODOS') return true;
     return p.estado.toUpperCase() === filtroEstadoActual;
@@ -216,24 +215,23 @@ function abrirModalDetallePedidoAdmin(pedido: any) {
 
 async function ejecutarPatchEstadoBackend(id: number, nuevoEstado: string) {
   try {
-    // 🛠️ CORREGIDO: El estado 'nuevoEstado' ahora viaja legítimamente como un Query Parameter en la URL para encastrar con Spring Boot
     const respuesta = await fetch(`http://localhost:8080/api/orders/${id}/status?nuevoEstado=${nuevoEstado}`, {
       method: 'PATCH'
     });
 
     if (respuesta.ok) {
-      alert("🎉 El estado de la orden ha sido actualizado en la cocina con éxito.");
+      alert("El estado de la orden ha sido actualizado en la cocina con éxito.");
       
       const modal = document.getElementById('modal-detalle-pedido-admin');
       if (modal) modal.style.display = 'none';
 
-      await cargarGestionPedidosAdmin(); // Recarga reactiva en cascada
+      await cargarGestionPedidosAdmin();
     } else {
       const errorTxt = await respuesta.text();
-      alert(`⚠️ No se pudo modificar la orden: ${errorTxt}`);
+      alert(`No se pudo modificar la orden: ${errorTxt}`);
     }
   } catch (error) {
     console.error(error);
-    alert("❌ Error de red al intentar impactar la actualización de estado.");
+    alert("Error de red al intentar impactar la actualización de estado.");
   }
 }

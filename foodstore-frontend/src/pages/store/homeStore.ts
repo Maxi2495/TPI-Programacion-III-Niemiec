@@ -1,6 +1,5 @@
 import { cargarDetalleProducto } from './productDetail/productDetail.ts';
 import { cargarCarritoStore } from './cart/cart.ts';
-// Variables de estado local para el control reactivo del catálogo
 let productosGlobal: any[] = [];
 let categoriasGlobal: any[] = [];
 
@@ -16,7 +15,6 @@ export async function cargarHomeStore() {
   contenedor.innerHTML = `<div style="padding: 20px;">⏳ Sincronizando catálogo con el servidor Java...</div>`;
 
   try {
-    // 1. Consumo paralelo de los endpoints exigidos por la rúbrica
     const [resProductos, resCategorias] = await Promise.all([
       fetch('http://localhost:8080/api/products/shop'),
       fetch('http://localhost:8080/api/categories')
@@ -33,7 +31,6 @@ export async function cargarHomeStore() {
 }
 
 function renderizarEstructuraCatalogo(contenedor: HTMLElement) {
-  // Calculamos la cantidad de ítems que hay actualmente en el localStorage del carrito
   const carritoActual = JSON.parse(localStorage.getItem('carrito_foodstore') || '[]');
   const totalItemsCarrito = carritoActual.reduce((acc: number, item: any) => acc + item.cantidad, 0);
 
@@ -70,13 +67,13 @@ function renderizarEstructuraCatalogo(contenedor: HTMLElement) {
         <ul style="list-style: none; padding: 0; display:flex; flex-direction:column; gap:8px;">
           <li>
             <button class="btn-categoria-link ${categoriaFiltroId === null ? 'activo' : ''}" id="btn-cat-todas">
-              💥 Mostrar Todo
+              Mostrar Todo
             </button>
           </li>
           ${categoriasGlobal.map(cat => `
             <li>
               <button class="btn-categoria-link ${categoriaFiltroId === cat.id ? 'activo' : ''}" id="btn-cat-${cat.id}">
-                👉 ${cat.nombre}
+                ${cat.nombre}
               </button>
             </li>
           `).join('')}
@@ -102,19 +99,16 @@ function renderizarEstructuraCatalogo(contenedor: HTMLElement) {
 }
 
 function configurarEventosCatalogo() {
-  // Listener de búsqueda en tiempo real
   document.getElementById('input-busqueda-realtime')?.addEventListener('input', (e) => {
     textoBusqueda = (e.target as HTMLInputElement).value.toLowerCase();
     ejecutarFiltradoYRenderizadoDeGrid();
   });
 
-  // Listener de ordenamiento
   document.getElementById('select-ordenamiento')?.addEventListener('change', (e) => {
     criterioOrden = (e.target as HTMLSelectElement).value;
     ejecutarFiltradoYRenderizadoDeGrid();
   });
 
-  // Listeners dinámicos para los botones de las categorías
   document.getElementById('btn-cat-todas')?.addEventListener('click', () => {
     categoriaFiltroId = null;
     marcarCategoriaActiva();
@@ -129,12 +123,10 @@ function configurarEventosCatalogo() {
     });
   });
 
-  // Botón para viajar a la pantalla del carrito
   document.getElementById('btn-ir-al-carrito-page')?.addEventListener('click', () => {
     cargarCarritoStore(); 
   });
 
-  // Toggle para mobile
   document.getElementById('btn-toggle-sidebar-mobile')?.addEventListener('click', () => {
     const sidebar = document.getElementById('sidebar-categorias-store');
     if (sidebar) {
@@ -145,7 +137,6 @@ function configurarEventosCatalogo() {
 }
 
 function marcarCategoriaActiva() {
-  // Limpia clases activas previas
   document.querySelectorAll('.btn-categoria-link').forEach(btn => btn.classList.remove('activo'));
   
   if (categoriaFiltroId === null) {
@@ -160,14 +151,12 @@ function ejecutarFiltradoYRenderizadoDeGrid() {
   const contador = document.getElementById('contador-productos-encontrados');
   if (!grid || !contador) return;
 
-  // 1. Fase de Filtrado (Categoría + Búsqueda por texto)
   let filtrados = productosGlobal.filter(p => {
     const cumpleCategoria = (categoriaFiltroId === null) || (p.categoriaId === categoriaFiltroId);
     const cumpleTexto = p.nombre.toLowerCase().includes(textoBusqueda) || p.descripcion.toLowerCase().includes(textoBusqueda);
     return cumpleCategoria && cumpleTexto;
   });
 
-  // 2. Fase de Ordenamiento Funcional
   if (criterioOrden === 'A-Z') {
     filtrados.sort((a, b) => a.nombre.localeCompare(b.nombre));
   } else if (criterioOrden === 'Z-A') {
@@ -178,10 +167,8 @@ function ejecutarFiltradoYRenderizadoDeGrid() {
     filtrados.sort((a, b) => b.precio - a.precio);
   }
 
-  // 3. Renderizar el contador requerido
   contador.innerText = `📋 Se encontraron ${filtrados.length} productos disponibles`;
 
-  // 4. Renderizar el Grid de tarjetas estructurales
   if (filtrados.length === 0) {
     grid.innerHTML = `<p style="padding: 20px; color: #6c757d;">No se encontraron platos que coincidan con los filtros aplicados.</p>`;
     return;
@@ -204,7 +191,6 @@ function ejecutarFiltradoYRenderizadoDeGrid() {
     </div>
   `).join('');
 
-  // Enganchamos el clic para ir al detalle extendido (Requerimiento de la rúbrica)
   filtrados.forEach(p => {
     document.getElementById(`card-producto-${p.id}`)?.addEventListener('click', () => {
       abrirModalDetalleProducto(p);
