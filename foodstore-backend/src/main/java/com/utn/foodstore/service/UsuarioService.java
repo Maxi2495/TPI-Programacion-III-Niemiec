@@ -29,7 +29,7 @@ public class UsuarioService { //Aca el usuario se registra y se matchea el logue
     public UsuarioDto registrar(UsuarioRegistro dto) {
         //Email unico obligatorio
         if (usuarioRepository.findByMailAndEliminadoFalse(dto.getMail()).isPresent()) {
-            throw new RuntimeException("El email ya se encuentra registrado");
+            throw new com.utn.foodstore.exception.BusinessException("El email ya se encuentra registrado");
         }
 
         Usuario nuevo = Usuario.builder()
@@ -91,6 +91,20 @@ public class UsuarioService { //Aca el usuario se registra y se matchea el logue
         if (dto.getNombre() != null) usuario.setNombre(dto.getNombre());
         if (dto.getApellido() != null) usuario.setApellido(dto.getApellido());
         if (dto.getCelular() != null) usuario.setCelular(dto.getCelular());
+
+        //Valida mail unico
+        if (dto.getMail() != null && !dto.getMail().trim().equalsIgnoreCase(usuario.getMail())) {
+            String nuevoMail = dto.getMail().trim().toLowerCase();
+            if (usuarioRepository.findByMailAndEliminadoFalse(nuevoMail).isPresent()) {
+                throw new com.utn.foodstore.exception.BusinessException("El email solicitado ya está en uso por otra cuenta activa");
+            }
+            usuario.setMail(nuevoMail);
+        }
+
+        //encripta nuevamente la contraseña
+        if (dto.getContrasena() != null && !dto.getContrasena().isBlank()) {
+            usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
+        }
 
         Usuario guardado = usuarioRepository.save(usuario);
         return mapearADto(guardado);

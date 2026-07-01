@@ -8,4 +8,6 @@ public class UsuarioEdit {
     private String nombre;
     private String apellido;
     private String celular;
+    private String mail;
+    private String contrasena;
 }

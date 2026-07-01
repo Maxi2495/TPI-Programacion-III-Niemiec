@@ -50,12 +50,12 @@ public class PedidoService {
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con ID: " + item.getProductoId()));
 
             if (productoDB.getDisponible() == null || !productoDB.getDisponible()) {
-                throw new RuntimeException("El producto '" + productoDB.getNombre() + "' no está disponible para la venta");
+                throw new com.utn.foodstore.exception.BusinessException("El producto '" + productoDB.getNombre() + "' no está disponible para la venta");
             }
 
             //Control de Stock
             if (productoDB.getStock() < item.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para el producto: " + productoDB.getNombre() + ". Quedan: " + productoDB.getStock());
+                throw new com.utn.foodstore.exception.BusinessException("Stock insuficiente para el producto: " + productoDB.getNombre() + ". Quedan: " + productoDB.getStock());
             }
 
             //Descontar el stock. El stock nuevo se guarda al final de la transaccion
@@ -110,12 +110,12 @@ public class PedidoService {
                 .filter(pedido -> pedido.getEstado() == EstadoPedido.TERMINADO)
                 //total de cada pedido
                 .mapToDouble(Pedido::getTotal)
-                // Suma final
+                //suma final
                 .sum();
     }
 
     public java.util.List<PedidoDto> obtenerTodos() {
-        // Formateador estándar de Java para dejar la fecha y hora súper prolija (Ej: 29/06/2026 19:45)
+        //formate fecha y hora
         java.time.format.DateTimeFormatter formateador = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         return pedidoRepository.findAll().stream()
@@ -204,7 +204,7 @@ public class PedidoService {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con ID: " + id));
 
-        dto.applyTo(pedido); // Aplicamos los cambios del DTO
+        dto.applyTo(pedido);
 
         Pedido guardado = pedidoRepository.save(pedido);
         return PedidoDto.builder()

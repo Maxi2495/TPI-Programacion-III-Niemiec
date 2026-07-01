@@ -56,6 +56,19 @@ public class ProductoService {
         return productos.stream().map(this::mapearADto).toList();
     }
 
+    // HU-013: abuscar un producto por su Id
+    public ProductoDto buscarPorId(Long id) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con ID: " + id));
+        return mapearADto(producto);
+    }
+
+    // HU-014: Filtrar catálogo de productos por familia/categoría
+    public List<ProductoDto> listarPorCategoria(Long categoriaId) {
+        List<Producto> productos = productoRepository.findByCategoriaIdAndEliminadoFalse(categoriaId);
+        return productos.stream().map(this::mapearADto).toList();
+    }
+
     @Transactional
     public ProductoDto actualizar(Long id, com.utn.foodstore.dto.producto.ProductoEdit dto) { // 👈 Cambiado a ProductoEdit
         Producto producto = productoRepository.findById(id)

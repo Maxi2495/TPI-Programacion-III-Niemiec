@@ -40,14 +40,14 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.listarActivos());
     }
 
-    //HU-004: PUT Editar e inhabilitar disponibilidad
+    //HU-004: PUT editar e inhabilitar disponibilidad
     @PutMapping("/{id}")
     public ResponseEntity<ProductoDto> actualizar(@PathVariable Long id, @Valid @RequestBody ProductoEdit dto) {
         // Nota: Si en tu service el método se llama distinto (ej: editar), cambialo acá.
         return ResponseEntity.ok(productoService.actualizar(id, dto));
     }
 
-    //HU-005: DELETE Baja o eliminación de producto
+    //HU-005: DELETE baja o eliminacion de producto
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         // Nota: Si en tu service se llama eliminarLogico o darDeBaja, adaptalo al nombre exacto.
@@ -58,5 +58,17 @@ public class ProductoController {
     @GetMapping("/shop") //GET para que el cliente no vea lo inactivo del lado admin
     public ResponseEntity<List<ProductoDto>> listarParaTienda() {
         return ResponseEntity.ok(productoService.listarParaTienda());
+    }
+
+    //GET de Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductoDto> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(productoService.buscarPorId(id));
+    }
+
+    //GET de Listar por categoría
+    @GetMapping("/categoria/{categoriaId}")
+    public ResponseEntity<List<ProductoDto>> obtenerPorCategoria(@PathVariable Long categoriaId) {
+        return ResponseEntity.ok(productoService.listarPorCategoria(categoriaId));
     }
 }
