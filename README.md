@@ -91,11 +91,11 @@ Las contraseñas se almacenan encriptadas con BCrypt. No se implementa autentica
 
 ## Video demostrativo
 
-[Enlace al video](PENDIENTE)
+[\[Enlace al video\]](https://youtu.be/TQcRNNfx7gw) 
 
 ## Documentación
 
-[Informe técnico completo (PDF)](PENDIENTE)
+[\[Informe técnico completo (PDF)\]](https://github.com/Maxi2495/TPI-Programacion-III-Niemiec/blob/main/Informe%20Foodstore%20-%20TPI%20Programacion%20III.docx.pdf) 
 
 ## Autor
 
