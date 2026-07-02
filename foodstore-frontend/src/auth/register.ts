@@ -77,7 +77,7 @@ async function procesarRegistroBackend(e: Event) {
 
     if (respuesta.ok) {
       const usuarioCreado = await respuesta.json();
-      alert("¡Registro exitoso en la base de datos H2!");
+      alert("¡Registro exitoso!");
 
       //Auto-login para despues del registro
       const sesionAutoLogin = {
